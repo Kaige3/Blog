@@ -3,6 +3,7 @@ package com.kaige.entity;
 import lombok.*;
 
 @Data
+// 记录一个bug TODO 使用getter setter 发起请求后报406，手动设置后请求正确
 public class Result {
     private Integer code;
     private Object data;
