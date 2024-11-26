@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.4.0</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.kaige</groupId>
+    <artifactId>Kaige_blog</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>Kaige_blog</name>
+    <description>Blog-backEnd</description>
+<!--    <url/>-->
+<!--    <licenses>-->
+<!--        <license/>-->
+<!--    </licenses>-->
+<!--    <developers>-->
+<!--        <developer/>-->
+<!--    </developers>-->
+<!--    <scm>-->
+<!--        <connection/>-->
+<!--        <developerConnection/>-->
+<!--        <tag/>-->
+<!--        <url/>-->
+<!--    </scm>-->
+    <properties>
+        <java.version>17</java.version>
+        <jimmer.version>0.9.20</jimmer.version>
+    </properties>
+<!-- spring-web -->
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+<!--  mysql-->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+<!-- lombok-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+<!--        spring-test-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+<!-- hutool-crypto -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-crypto</artifactId>
+            <version>5.8.11</version>
+        </dependency>
+<!--        Jimmer-->
+        <dependency>
+            <groupId>org.babyfish.jimmer</groupId>
+            <artifactId>jimmer-spring-boot-starter</artifactId>
+            <version>${jimmer.version}</version>
+        </dependency>
+<!--        jimmer其他必要配置，解决不必要的麻烦-->
+        <dependency>
+            <groupId>org.babyfish.jimmer</groupId>
+            <!-- 用户编写的实体代码所需的依赖 -->
+            <artifactId>jimmer-core</artifactId>
+            <version>${jimmer.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.babyfish.jimmer</groupId>
+            <!-- 生成的代码所需的依赖 -->
+            <artifactId>jimmer-sql</artifactId>
+            <version>${jimmer.version}</version>
+            <!--其他项目必然导入包含此依赖-->
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+<!--            jimmer生成代码-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.babyfish.jimmer</groupId>
+                            <artifactId>jimmer-apt</artifactId>
+                            <version>${jimmer.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

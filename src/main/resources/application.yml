@@ -1,0 +1,28 @@
+# 服务器端口号
+server:
+  port: 9090
+# 博客配置暂时不屑 TODO
+#blog
+#  name:
+
+# 数据库连接信息
+spring:
+  datasource:
+    password: your_password
+    username: root
+    url: jdbc:mysql://114.132.123.49.:3306/nblog?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+# Redis
+  data:
+    redis:
+      host: 114.132.123.49
+      password:
+      port: 6379
+      connect-timeout: 100000ms
+      database: 1
+# jimmer
+jimmer:
+  dialect: org.babyfish.jimmer.sql.dialect.MySqlDialect
+  show-sql: true
+  pretty-sql: true
+  database-validation-mode: ERROR
