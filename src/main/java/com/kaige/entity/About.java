@@ -1,12 +1,9 @@
 package com.kaige.entity;
 
-import org.babyfish.jimmer.sql.Entity;
-import org.babyfish.jimmer.sql.Id;
-import org.babyfish.jimmer.sql.GeneratedValue;
+import lombok.Data;
+import org.babyfish.jimmer.sql.*;
 
 import javax.validation.constraints.Null;
-
-import org.babyfish.jimmer.sql.GenerationType;
 
 import java.math.BigInteger;
 
@@ -14,6 +11,7 @@ import java.math.BigInteger;
  * Entity for table "about"
  */
 @Entity
+@Table(name = "Kaige_blog.about")
 public interface About {
 
     @Id
@@ -28,6 +26,6 @@ public interface About {
     String nameZh();
 
     @Null
-    Object value();
+    String value();
 }
 
