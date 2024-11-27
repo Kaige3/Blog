@@ -1,4 +1,4 @@
 package com.kaige.service;
 
-public class AboutService {
+public interface AboutService {
 }
