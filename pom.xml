@@ -124,12 +124,7 @@
             <artifactId>commonmark-ext-task-list-items</artifactId>
             <version>0.18.1</version>
         </dependency>
-<!--        redis-->
-        <!-- 集成redis依赖  -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
+
 
     </dependencies>
 
