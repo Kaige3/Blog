@@ -65,7 +65,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-<!-- hutool-crypto -->
+<!--        localDateTime -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.15.0</version>  <!-- 选择与你的 Jackson 版本兼容的版本 -->
+        </dependency>
+
+        <!-- hutool-crypto -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-crypto</artifactId>

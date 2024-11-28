@@ -1,10 +1,13 @@
 package com.kaige.service.impl;
 
+import com.kaige.constant.RedisKeyConstants;
 import com.kaige.entity.*;
 import com.kaige.service.BlogService;
+import com.kaige.service.RedisService;
 import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.Predicate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +18,9 @@ import static java.lang.String.format;
 
 @Service
 public class BlogServiceImpl implements BlogService {
+
+    @Autowired
+    private RedisService redisService;
 
 
     private JSqlClient jSqlClient;
@@ -57,21 +63,28 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public Page<Blog> getBlogListByIsPublished(Integer pageNum) {
+        String redisKey = RedisKeyConstants.HOME_BLOG_INFO_LIST;
+        Page<Blog> pageResultFromRedis = redisService.getBlogInfoPageResultByPublish(redisKey,pageNum);
+        if(pageResultFromRedis!=null){
+            return pageResultFromRedis;
+        }
         BlogTable blog = BlogTable.$;
-        return jSqlClient.createQuery(blog)
-              .where(blog.Published().eq(true))
-              .orderBy(Predicate.sql("%v",it->it.value(orderBy)))
-              .select(blog.fetch(
+        Page<Blog> blogPage = jSqlClient.createQuery(blog)
+                .where(blog.Published().eq(true))
+                .orderBy(Predicate.sql("%v", it -> it.value(orderBy)))
+                .select(blog.fetch(
                         BlogFetcher.$
                                 .allTableFields()
                                 .category(
                                         CategoryFetcher.$
-                                              .categoryName()
+                                                .categoryName()
                                 )
                                 .tags(TagFetcher.$
                                         .allTableFields()
-                                      )))
-                .fetchPage(pageNum-1,10);
+                                )))
+                .fetchPage(pageNum - 1, 10);
+        redisService.saveKVToHash(redisKey,pageNum,blogPage);
+        return blogPage;
     }
 
     /**
