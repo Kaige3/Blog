@@ -7,4 +7,5 @@ public class RedisKeyConstants {
 //    关于我的页面 Key
     public static final String ABOUT_INFO_MAP = "aboutInfoMap";
     public static final String HOME_BLOG_INFO_LIST = "homeBlogInfoList";
+    public static final String FRIEND_INFO_MAP = "friendInfoMap";
 }

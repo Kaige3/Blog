@@ -1,6 +1,7 @@
 package com.kaige.service.impl;
 
 import com.kaige.entity.Blog;
+import com.kaige.entity.vo.FriendInfoVo;
 import com.kaige.service.RedisService;
 import com.kaige.utils.JacksonUtils;
 import org.babyfish.jimmer.Page;
@@ -41,5 +42,17 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public void saveKVToHash(String rediskey, Object key, Object value) {
         redisTemplate.opsForHash().put(rediskey,key,value);
+    }
+
+    @Override
+    public <T> T getObjectByValue(String redisKey, Class t) {
+        Object object = redisTemplate.opsForValue().get(redisKey);
+        T object1 = (T) JacksonUtils.convertValue(object, t);
+        return object1;
+    }
+
+    @Override
+    public void saveObjectToValue(String redisKey, FriendInfoVo friendInfoVo1) {
+        redisTemplate.opsForValue().set(redisKey,friendInfoVo1);
     }
 }

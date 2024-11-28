@@ -1,6 +1,8 @@
 package com.kaige.service;
 
 import com.kaige.entity.Blog;
+import com.kaige.entity.SiteSetting;
+import com.kaige.entity.vo.FriendInfoVo;
 import org.babyfish.jimmer.Page;
 
 import java.util.HashMap;
@@ -14,4 +16,8 @@ public interface RedisService {
     Page<Blog> getBlogInfoPageResultByPublish(String rediskey, Integer pageNum);
 
     void saveKVToHash(String rediskey, Object key , Object value);
+
+    <T> T getObjectByValue(String redisKey, Class t);
+
+    void saveObjectToValue(String redisKey, FriendInfoVo friendInfoVo1);
 }
