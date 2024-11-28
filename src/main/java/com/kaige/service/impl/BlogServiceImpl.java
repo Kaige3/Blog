@@ -47,8 +47,30 @@ public class BlogServiceImpl implements BlogService {
                                 .password()
                                 .Published()
                                 .category(CategoryFetcher.$
-                                       .categoryName()
-                )))
+                                       .categoryName())
+                                .tags(TagFetcher.$
+                                       .tagName()
+                                        .color())
+                ))
+                .fetchPage(pageNum-1,10);
+    }
+
+    @Override
+    public Page<Blog> getBlogListByIsPublished(Integer pageNum) {
+        BlogTable blog = BlogTable.$;
+        return jSqlClient.createQuery(blog)
+              .where(blog.Published().eq(true))
+              .orderBy(Predicate.sql("%v",it->it.value(orderBy)))
+              .select(blog.fetch(
+                        BlogFetcher.$
+                                .allTableFields()
+                                .category(
+                                        CategoryFetcher.$
+                                              .categoryName()
+                                )
+                                .tags(TagFetcher.$
+                                        .allTableFields()
+                                      )))
                 .fetchPage(pageNum-1,10);
     }
 

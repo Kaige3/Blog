@@ -7,6 +7,7 @@ import javax.validation.constraints.Null;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Entity for table "blog"
@@ -93,14 +94,30 @@ public interface Blog {
     /**
      * 文章分类
      */
-//    TODO 建立与分类的多对一关系
     @ManyToOne
     @JoinColumn(name = "category_id",foreignKeyType = ForeignKeyType.FAKE)
     @Nullable
     Category category();
+    /**
+     * 文章标签
+     */
+    @ManyToMany
+    @JoinTable(
+            name = "blog_tag",
+//            inverseJoinColumnName = "tag_id",
+//            joinColumnName = "blog_id",
+//            ,foreignKeyType = ForeignKeyType.FAKE
+            joinColumns = {
+                    @JoinColumn(name = "blog_id",foreignKeyType = ForeignKeyType.FAKE),
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "tag_id",foreignKeyType = ForeignKeyType.FAKE),
+            }
+    )
+    List<Tag> tags();
 
     /**
-     * 是否指定
+     * 是否置顶
      */
     @Column(name = "is_top")
     boolean Top();

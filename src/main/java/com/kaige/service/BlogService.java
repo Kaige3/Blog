@@ -9,4 +9,6 @@ public interface BlogService {
     Map<String, Object> getArchiveBlogAndCountByIsPublished();
 
     Page<Blog> getBlogListByCategoryName(String categoryName, Integer pageNum);
+
+    Page<Blog> getBlogListByIsPublished(Integer pageNum);
 }
