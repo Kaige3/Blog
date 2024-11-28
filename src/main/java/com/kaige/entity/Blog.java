@@ -1,5 +1,6 @@
 package com.kaige.entity;
 
+import jakarta.annotation.Nullable;
 import org.babyfish.jimmer.sql.*;
 
 import javax.validation.constraints.Null;
@@ -85,14 +86,18 @@ public interface Blog {
     int words();
 
     /**
-     * 阅读事件
+     * 阅读时间
      */
     int readTime();
 
     /**
      * 文章分类
      */
-    int categoryId();
+//    TODO 建立与分类的多对一关系
+    @ManyToOne
+    @JoinColumn(name = "category_id",foreignKeyType = ForeignKeyType.FAKE)
+    @Nullable
+    Category category();
 
     /**
      * 是否指定
@@ -110,6 +115,7 @@ public interface Blog {
      * 文章作者
      */
     @Null
+//    TODO 建立与用户的多对一关系
     BigInteger userId();
 }
 

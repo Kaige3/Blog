@@ -1,18 +1,12 @@
 package com.kaige.service.impl;
 
-import com.kaige.entity.Blog;
-import com.kaige.entity.BlogDraft;
-import com.kaige.entity.BlogFetcher;
-import com.kaige.entity.BlogTable;
+import com.kaige.entity.*;
 import com.kaige.service.BlogService;
+import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.Predicate;
-import org.babyfish.jimmer.sql.ast.query.MutableRootQuery;
-import org.babyfish.jimmer.sql.ast.tuple.Tuple6;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -22,11 +16,47 @@ import static java.lang.String.format;
 @Service
 public class BlogServiceImpl implements BlogService {
 
+
     private JSqlClient jSqlClient;
     public BlogServiceImpl(JSqlClient jSqlClient) {
         this.jSqlClient = jSqlClient;
     }
+
+    //博客简介列表排序方式
+    private static final String orderBy = "is_top desc, create_time desc";
+
     @Override
+    /**
+     * 根据分类名称获取 公开 文章列表
+     */
+
+    public Page<Blog> getBlogListByCategoryName(String categoryName, Integer pageNum) {
+        BlogTable blog = BlogTable.$;
+        return jSqlClient.createQuery(blog)
+                .where(blog.category().categoryName().eq(categoryName))
+                .orderBy(Predicate.sql("%v",it->it.value(orderBy)))
+                .select(blog.fetch(
+                        BlogFetcher.$
+                              .title()
+                                .description()
+                                .createTime()
+                                .views()
+                                .words()
+                                .readTime()
+                                .Top()
+                                .password()
+                                .Published()
+                                .category(CategoryFetcher.$
+                                       .categoryName()
+                )))
+                .fetchPage(pageNum-1,10);
+    }
+
+    /**
+     文章归档  按照年月  统计文章数量
+      */
+    @Override
+    //TODO 完善字段显示，createTIme格式化
     public Map<String, Object> getArchiveBlogAndCountByIsPublished() {
 //        查缓存
 //        按照文章是否公布，对年和月进行统计
@@ -60,23 +90,7 @@ public class BlogServiceImpl implements BlogService {
                                     .Published()
                     ))
                     .execute();
-//            for (Blog b : execute1){
-//                if(!"".equals(b.password())){
-////                    BlogDraft blogDraft= BlogDraft.
-////                    blogDraft.setPassword("");
-////                    blogDraft.setPublished(false);
-////                    b=blogDraft;
-//                    b.createTime().format(DateTimeFormatter.ofPattern("dd日"));
-//                    Blog newBlog = BlogDraft.$.produce(b, draft -> {
-//                        draft.setPassword("");
-//                        draft.setPublished(false);
-//                        draft.setCreateTime(b.createTime().format(DateTimeFormatter.ofPattern("dd日")));
-//                    });
-//                    BeanUtils.copyProperties(b,newBlog);
-//                }else {
-//                    b.createTime().format(outputFormatter);
-//                }
-//            }
+
 //            for (Blog b : execute1) {
 //                // 判断密码是否为空
 //                if (b.password() != null && !"".equals(b.password())) {
