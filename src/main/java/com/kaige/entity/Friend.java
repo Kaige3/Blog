@@ -49,7 +49,7 @@ public interface Friend {
     /**
      * 点击次数
      */
-    Integer views();
+    int views();
 
     /**
      * 创建时间

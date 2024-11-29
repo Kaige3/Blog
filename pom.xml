@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.0</version>
+        <version>3.1.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.kaige</groupId>
@@ -28,13 +28,24 @@
 <!--    </scm>-->
     <properties>
         <java.version>17</java.version>
-        <jimmer.version>0.9.20</jimmer.version>
+        <jimmer.version>0.9.17</jimmer.version>
     </properties>
 <!-- spring-web -->
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+<!--        security 知乎一位大佬讲的真的太牛逼了，我要下回来-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <!-- jwt -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.12.3</version>
         </dependency>
 <!--        json序列化-->
         <dependency>
@@ -48,10 +59,11 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
-<!-- lombok-->
+        <!-- lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.34</version>  <!-- 使用最新版本 -->
         </dependency>
 <!--        spring-test-->
         <dependency>

@@ -2,9 +2,10 @@ package com.kaige.entity;
 
 import lombok.*;
 
-@Data
-//@Getter
-//@Setter
+//@Data
+//@AllArgsConstructor
+//@NoArgsConstructor
+//@ToString
 // 记录一个bug TODO 使用getter setter 发起请求后报406，
 public class Result {
     private Integer code;

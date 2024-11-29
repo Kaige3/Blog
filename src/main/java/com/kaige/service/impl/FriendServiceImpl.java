@@ -7,7 +7,6 @@ import com.kaige.exception.PersistenceException;
 import com.kaige.service.FriendService;
 import com.kaige.service.RedisService;
 import com.kaige.utils.markdown.MarkdownUtils;
-import org.apache.tomcat.util.modeler.FeatureInfo;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

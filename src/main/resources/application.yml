@@ -1,9 +1,9 @@
 # 服务器端口号
 server:
   port: 9090
-# 博客配置暂时不屑 TODO
+# 博客配置暂时不写 TODO
 #blog
-#  name:
+#  name: Kaigee.top
 
 # 数据库连接信息
 spring:
@@ -27,4 +27,11 @@ jimmer:
   pretty-sql: true
   database-validation:
     catalog: Kaige_blog
-    mode:
+    mode: ERROR
+
+token:
+  expireTime: 259200000
+  secretKey: "abcdefghijklmnopqrstuvwxyz"
+
+
+
