@@ -27,4 +27,4 @@ jimmer:
   pretty-sql: true
   database-validation:
     catalog: Kaige_blog
-    mode: error
+    mode:

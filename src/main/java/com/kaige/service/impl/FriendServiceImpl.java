@@ -3,12 +3,15 @@ package com.kaige.service.impl;
 import com.kaige.constant.RedisKeyConstants;
 import com.kaige.entity.*;
 import com.kaige.entity.vo.FriendInfoVo;
+import com.kaige.exception.PersistenceException;
 import com.kaige.service.FriendService;
 import com.kaige.service.RedisService;
 import com.kaige.utils.markdown.MarkdownUtils;
+import org.apache.tomcat.util.modeler.FeatureInfo;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -36,7 +39,7 @@ public class FriendServiceImpl implements FriendService {
         SiteSettingTable siteSettingTable = SiteSettingTable.$;
 
         String redisKey = RedisKeyConstants.FRIEND_INFO_MAP;
-        FriendInfoVo friendInfoVo = redisService.getObjectByValue(redisKey,SiteSetting.class);
+        FriendInfoVo friendInfoVo = redisService.getObjectByValue(redisKey, FriendInfoVo.class);
         if(friendInfoVo!= null){
             return friendInfoVo;
         }
@@ -60,4 +63,18 @@ public class FriendServiceImpl implements FriendService {
         redisService.saveObjectToValue(redisKey,friendInfoVo1);
         return friendInfoVo1;
     }
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addViewsByNickname(String nickname) {
+        FriendTable friend = FriendTable.$;
+        Integer execute = sqlClient.createUpdate(friend)
+                .where(friend.nickname().eq(nickname))
+                .set(friend.views(), friend.views().plus(1))
+                .execute();
+
+        if(execute != 1){
+            throw new PersistenceException("操作失败");
+        }
+    }
+
 }

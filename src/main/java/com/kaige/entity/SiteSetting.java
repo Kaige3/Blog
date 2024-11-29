@@ -11,6 +11,7 @@ import java.math.BigInteger;
  */
 @Entity
 @Table(name = "site_setting")
+@Serialized
 public interface SiteSetting {
 
     @Id

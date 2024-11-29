@@ -10,4 +10,6 @@ public interface FriendService {
     List<Friend> getFriendList();
 
     FriendInfoVo getSiteFriendinfo();
+
+    void addViewsByNickname(String nickname);
 }
