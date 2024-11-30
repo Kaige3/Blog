@@ -16,6 +16,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ControllerExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    /**
+     * 捕获持久化异常后，返回 json 数据
+     * @param request
+     * @param e
+     * @return
+     */
     @ExceptionHandler(PersistenceException.class)
     public Result persistenceExceptionHandler(HttpServletRequest request, PersistenceException e) {
         logger.error("Request URL ; {},Exception:",request.getRequestURL(),e);

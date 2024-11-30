@@ -1,20 +1,24 @@
 package com.kaige.config;
 
+import com.kaige.service.LoginLogService;
+import com.kaige.service.impl.LoginLogServiceImpl;
 import com.kaige.service.impl.UserServiceImpl;
+import org.checkerframework.checker.units.qual.A;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity // 开启WebSecurity
@@ -22,6 +26,8 @@ public class SecurityConfig{
 
     @Autowired
     private UserServiceImpl userService;
+    @Autowired
+    private LoginLogService loginLogService;
 
     /**
      * 密码加密
@@ -46,12 +52,23 @@ public class SecurityConfig{
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(@NotNull HttpSecurity http) throws Exception {
          http.
-                // 禁用 csrf防御，因为不使用session
-                csrf(AbstractHttpConfigurer::disable)
-                // 不通过Session获取SecurityContext
-                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        return http.build();
+            // 禁用 csrf防御，因为不使用session
+                 csrf(AbstractHttpConfigurer::disable)
+                 // 不通过Session获取SecurityContext
+                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                 .authorizeHttpRequests(authorize -> authorize
+                  // 对于登录接口 允许匿名访问
+                 .requestMatchers("/admin/webTitleSffix").permitAll()
+                 .requestMatchers(HttpMethod.GET,"/admin/**").hasAnyRole("admin","visitor")
+                 .requestMatchers("/admin/**").hasRole("admin")
+                  // 除上面外的所有请求全部需要鉴权认证
+                 .anyRequest().permitAll())
+                 .addFilterBefore(new JwtLoginFilter("/admin/login",loginLogService), UsernamePasswordAuthenticationFilter.class)
+                 .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class)
+//                  配置异常处理器
+                 .exceptionHandling(a-> a.authenticationEntryPoint(new MyAuthenticationEntryPoint()));
+         return http.build();
     }
 }

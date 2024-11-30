@@ -31,12 +31,12 @@ public class LoginController {
         if (!"ROLE_ADMIN".equals(user.role())){
             return Result.create(403,"无权限");
         }
-        Immutables.createUser(draft->{
+        User user1 = Immutables.createUser(user, draft -> {
             draft.setPassword("");
         });
         String jwt = JwtUtils.generateToken(JwtConstant.ADMIN_PREFIX + user.username());
         HashMap<String, Object> map = new HashMap<>(4);
-        map.put("user",user);
+        map.put("user",user1);
         map.put("token",jwt);
         return Result.ok("登录成功",map);
     }
