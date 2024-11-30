@@ -1,9 +1,7 @@
 package com.kaige.entity;
 
-import org.babyfish.jimmer.sql.Entity;
-import org.babyfish.jimmer.sql.Id;
-import org.babyfish.jimmer.sql.GeneratedValue;
-import org.babyfish.jimmer.sql.GenerationType;
+import org.babyfish.jimmer.sql.*;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -12,6 +10,7 @@ import java.time.LocalDateTime;
  * Entity for table "user"
  */
 @Entity
+@Table(name = "user")
 public interface User {
 
     @Id

@@ -40,4 +40,5 @@ public class JacksonUtils {
     public static <T> T convertValue(Object fromValue, Class<T> toValueType) {
         return objectMapper.convertValue(fromValue, toValueType);
     }
+
 }

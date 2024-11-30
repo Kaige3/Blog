@@ -15,7 +15,7 @@ import java.util.Map;
 @Service
 public class RedisServiceImpl implements RedisService {
 
-    @Autowired
+    @Autowired(required = true)
     RedisTemplate redisTemplate;
     @Override
     // 从 Redis 中获取 Map 数据

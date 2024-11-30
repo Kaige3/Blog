@@ -31,7 +31,7 @@ jimmer:
 
 token:
   expireTime: 259200000
-  secretKey: "abcdefghijklmnopqrstuvwxyz"
+  secretKey: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
 
 
 

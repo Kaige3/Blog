@@ -35,7 +35,6 @@ public class BlogServiceImpl implements BlogService {
     /**
      * 根据分类名称获取 公开 文章列表
      */
-
     public Page<Blog> getBlogListByCategoryName(String categoryName, Integer pageNum) {
         BlogTable blog = BlogTable.$;
         return jSqlClient.createQuery(blog)
@@ -92,6 +91,7 @@ public class BlogServiceImpl implements BlogService {
       */
     @Override
     //TODO 完善字段显示，createTIme格式化
+    //TODO 从缓存查询未实现
     public Map<String, Object> getArchiveBlogAndCountByIsPublished() {
 //        查缓存
 //        按照文章是否公布，对年和月进行统计
@@ -100,6 +100,7 @@ public class BlogServiceImpl implements BlogService {
                 .where(blog.Published().eq(true))
                 .select(blog.createTime())
                 .execute();
+
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy年MM月");
         // 存储格式化后的结果
         List<String> formattedDates = new ArrayList<>();
@@ -113,7 +114,6 @@ public class BlogServiceImpl implements BlogService {
         List<Blog> list = new ArrayList<>();
         // 遍历格式化后的日期列表
         for (String s : formattedDates) {
-
             List<Blog> execute1 = jSqlClient.createQuery(blog)
                     .where(Predicate.sql("DATE_FORMAT(create_time, '%Y年%m月') = %v", it->it.value(s)))
                     .select(blog.fetch(
