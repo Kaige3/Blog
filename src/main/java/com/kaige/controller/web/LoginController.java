@@ -38,6 +38,6 @@ public class LoginController {
         HashMap<String, Object> map = new HashMap<>(4);
         map.put("user",user1);
         map.put("token",jwt);
-        return Result.ok("登录成功",map);
+        return Result.ok("登录成功findByUsernameAndPassword",map);
     }
 }

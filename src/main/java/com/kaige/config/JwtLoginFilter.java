@@ -76,7 +76,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 		Map<String, Object> map = new HashMap<>(4);
 		map.put("user", user1);
 		map.put("token", jwt);
-		Result result = Result.ok("登录成功", map);
+		Result result = Result.ok("登录成功走jwtLoginFilter", map);
 		PrintWriter out = response.getWriter();
 		out.write(JacksonUtils.writeValueAsString(result));
 		out.flush();

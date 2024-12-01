@@ -22,7 +22,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 /**
- * @Description: JWT请求 权限过滤器
+ * @Description: JWT请求 权限过滤器,针对后台请求进行权限校验
  * @Author: Naccl
  * @Date: 2020-07-21
  */

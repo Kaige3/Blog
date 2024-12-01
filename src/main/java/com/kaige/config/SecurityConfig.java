@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -45,7 +46,7 @@ public class SecurityConfig{
     public AuthenticationManager authenticationManager(BCryptPasswordEncoder bCryptPasswordEncoder) throws Exception {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         // 设置自定义 userDetailsService，从数据库查询用户信息
-        daoAuthenticationProvider.setUserDetailsService(userService);
+//        daoAuthenticationProvider.setUserDetailsService(userService);
         // 设置密码加密器
         daoAuthenticationProvider.setPasswordEncoder(bCryptPasswordEncoder);
         return new ProviderManager(daoAuthenticationProvider);
@@ -60,7 +61,7 @@ public class SecurityConfig{
                  .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                  .authorizeHttpRequests(authorize -> authorize
                   // 对于登录接口 允许匿名访问
-                 .requestMatchers("/admin/webTitleSffix").permitAll()
+                  .requestMatchers("/admin/webTitleSffix").permitAll()
                  .requestMatchers(HttpMethod.GET,"/admin/**").hasAnyRole("admin","visitor")
                  .requestMatchers("/admin/**").hasRole("admin")
                   // 除上面外的所有请求全部需要鉴权认证
