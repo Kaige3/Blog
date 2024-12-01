@@ -4,7 +4,7 @@ import com.kaige.entity.Immutables;
 import com.kaige.entity.LoginLog;
 import com.kaige.entity.Result;
 import com.kaige.entity.User;
-import com.kaige.exception.BadRequestException;
+import com.kaige.handler.exception.BadRequestException;
 import com.kaige.service.LoginLogService;
 import com.kaige.utils.IpAddressUtils;
 import com.kaige.utils.JacksonUtils;

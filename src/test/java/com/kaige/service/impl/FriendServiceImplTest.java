@@ -1,6 +1,6 @@
 package com.kaige.service.impl;
 
-import com.kaige.exception.PersistenceException;
+import com.kaige.handler.exception.PersistenceException;
 import com.kaige.service.FriendService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

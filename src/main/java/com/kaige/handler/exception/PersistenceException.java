@@ -1,4 +1,4 @@
-package com.kaige.exception;
+package com.kaige.handler.exception;
 
 /**
  * 持久化异常

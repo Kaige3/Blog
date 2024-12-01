@@ -1,4 +1,4 @@
-package com.kaige.exception;
+package com.kaige.handler.exception;
 
 public class BadRequestException extends RuntimeException{
     /**

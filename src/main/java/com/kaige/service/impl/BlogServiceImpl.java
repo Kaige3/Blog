@@ -2,14 +2,19 @@ package com.kaige.service.impl;
 
 import com.kaige.constant.RedisKeyConstants;
 import com.kaige.entity.*;
+import com.kaige.handler.exception.NotFoundException;
+import com.kaige.repository.BlogRepository;
 import com.kaige.service.BlogService;
 import com.kaige.service.RedisService;
+import com.kaige.utils.markdown.MarkdownUtils;
 import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -21,6 +26,9 @@ public class BlogServiceImpl implements BlogService {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private BlogRepository blogRepository;
 
 
     private JSqlClient jSqlClient;
@@ -73,17 +81,49 @@ public class BlogServiceImpl implements BlogService {
                 .orderBy(Predicate.sql("%v", it -> it.value(orderBy)))
                 .select(blog.fetch(
                         BlogFetcher.$
-                                .allTableFields()
+                                .allScalarFields()
                                 .category(
                                         CategoryFetcher.$
                                                 .categoryName()
                                 )
                                 .tags(TagFetcher.$
                                         .allTableFields()
-                                )))
+                                )
+                        )
+                )
                 .fetchPage(pageNum - 1, 10);
         redisService.saveKVToHash(redisKey,pageNum,blogPage);
         return blogPage;
+    }
+
+    @Override
+    public Blog getBlogByIdAndIsPublished(Long id) {
+//        按id查找公布的文章
+        Blog blog = blogRepository.getBlogByIdAndIsPublished(id);
+        if(blog == null){
+            throw new NotFoundException("文章不存在");
+        }
+//        每篇文章的浏览量需要单独存储，使用 Hash 类型可以将所有文章的浏览量存储在一个 hash 键下，
+//        而不是每篇文章都使用一个独立的键。
+//       int view = (int) redisService.getValueByHashKey(RedisKeyConstants.BLOG_VIEWS_MAP,blog.id());
+//      设置文章内容转换为 h5
+        //      更新redis   文章浏览量+1
+        return Immutables.createBlog(blog, it -> {
+            it.setContent(MarkdownUtils.markdownToHtmlExtensions(blog.content()));
+//            it.setViews(view);
+        });
+    }
+
+    @Override
+    public String getBlogPassword(BigInteger id) {
+        BlogTable blogTable = BlogTable.$;
+        Blog blog = jSqlClient.createQuery(blogTable)
+                .where(blogTable.id().eq(id))
+                .select(blogTable.fetch(
+                        BlogFetcher.$
+                                .password()
+                )).fetchOne();
+        return blog.password();
     }
 
     /**

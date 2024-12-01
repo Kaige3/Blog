@@ -3,7 +3,7 @@ package com.kaige.service.impl;
 import com.kaige.constant.RedisKeyConstants;
 import com.kaige.entity.*;
 import com.kaige.entity.vo.FriendInfoVo;
-import com.kaige.exception.PersistenceException;
+import com.kaige.handler.exception.PersistenceException;
 import com.kaige.service.FriendService;
 import com.kaige.service.RedisService;
 import com.kaige.utils.markdown.MarkdownUtils;

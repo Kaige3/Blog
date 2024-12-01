@@ -3,6 +3,7 @@ package com.kaige.service;
 import com.kaige.entity.Blog;
 import org.babyfish.jimmer.Page;
 
+import java.math.BigInteger;
 import java.util.Map;
 
 public interface BlogService {
@@ -11,4 +12,8 @@ public interface BlogService {
     Page<Blog> getBlogListByCategoryName(String categoryName, Integer pageNum);
 
     Page<Blog> getBlogListByIsPublished(Integer pageNum);
+
+    Blog getBlogByIdAndIsPublished(Long id);
+
+    String getBlogPassword(BigInteger id);
 }

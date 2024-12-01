@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @Description: 关于我的页面
+ */
 @RestController
 public class AboutController {
 
@@ -22,6 +25,11 @@ public class AboutController {
     }
     @Autowired
     private RedisService redisService;
+    /**
+     * @Description: 获取关于我的信息
+     * @Author: Kaige
+     * @Date: 2020-07-21
+     */
     @GetMapping("/about")
     public Result about() {
 //        先到缓存中查询信息

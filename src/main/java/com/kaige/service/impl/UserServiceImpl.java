@@ -15,8 +15,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 //, UserDetailsService
-public class UserServiceImpl implements UserService  {
-    private JSqlClient jSqlClient;
+//
+public class UserServiceImpl implements UserService , UserDetailsService {
+    private final JSqlClient jSqlClient;
     public UserServiceImpl(JSqlClient jSqlClient) {
         this.jSqlClient = jSqlClient;
     }
@@ -28,20 +29,20 @@ public class UserServiceImpl implements UserService  {
      * @return
      * @throws UsernameNotFoundException
      */
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        UserTable userTable = UserTable.$;
-//        User user = jSqlClient.createQuery(userTable)
-//                .where(userTable.username().eq(username))
-//                .select(userTable.fetch(
-//                        UserFetcher.$.allTableFields()
-//                ))
-//                .fetchOneOrNull();
-//        if (user == null) {
-//            throw new UsernameNotFoundException("用户名不存在");
-//        }
-//        return (UserDetails) user;
-//    }
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserTable userTable = UserTable.$;
+        User user = jSqlClient.createQuery(userTable)
+                .where(userTable.username().eq(username))
+                .select(userTable.fetch(
+                        UserFetcher.$.allTableFields()
+                ))
+                .fetchOneOrNull();
+        if (user == null) {
+            throw new UsernameNotFoundException("用户名不存在");
+        }
+        return (UserDetails) user;
+    }
    @Override
     public User findByUsernameAndPassword(String username, String password) {
         UserTable userTable = UserTable.$;

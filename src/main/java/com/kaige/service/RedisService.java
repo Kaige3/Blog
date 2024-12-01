@@ -5,6 +5,7 @@ import com.kaige.entity.SiteSetting;
 import com.kaige.entity.vo.FriendInfoVo;
 import org.babyfish.jimmer.Page;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,4 +21,6 @@ public interface RedisService {
     <T> T getObjectByValue(String redisKey, Class t);
 
     void saveObjectToValue(String redisKey, FriendInfoVo friendInfoVo1);
+
+    Object getValueByHashKey(String hash, Object key);
 }

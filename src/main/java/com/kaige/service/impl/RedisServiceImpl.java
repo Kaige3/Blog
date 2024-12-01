@@ -55,4 +55,9 @@ public class RedisServiceImpl implements RedisService {
     public void saveObjectToValue(String redisKey, FriendInfoVo friendInfoVo1) {
         redisTemplate.opsForValue().set(redisKey,friendInfoVo1);
     }
+
+    @Override
+    public Object getValueByHashKey(String hash, Object key) {
+        return redisTemplate.opsForHash().get(hash,key);
+    }
 }
