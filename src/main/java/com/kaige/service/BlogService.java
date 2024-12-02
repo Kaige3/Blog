@@ -4,6 +4,7 @@ import com.kaige.entity.Blog;
 import org.babyfish.jimmer.Page;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Map;
 
 public interface BlogService {
@@ -16,4 +17,6 @@ public interface BlogService {
     Blog getBlogByIdAndIsPublished(Long id);
 
     String getBlogPassword(BigInteger id);
+
+    List<Blog> getSearchBlogListByQueryAndPublished(String trim);
 }

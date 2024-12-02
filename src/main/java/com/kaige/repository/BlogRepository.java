@@ -6,6 +6,7 @@ import org.babyfish.jimmer.sql.JSqlClient;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public interface BlogRepository  extends JRepository<Blog,Long>, Tables {
 
@@ -25,6 +26,17 @@ public interface BlogRepository  extends JRepository<Blog,Long>, Tables {
                                .tags(TagFetcher.$
                                        .allTableFields()
                                )))
-                .fetchOne();
+                .fetchOneOrNull();
+    }
+
+    default List<Blog> getSearchBlogListByQueryAndPublished(String trim){
+        return sql().createQuery(blog)
+                .where(blog.title().like("%"+trim+"%"))
+                .select(blog.fetch(
+                        BlogFetcher.$
+                                .title()
+                                .content()
+                ))
+                .execute();
     }
 }

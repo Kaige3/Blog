@@ -7,21 +7,22 @@ import com.kaige.repository.BlogRepository;
 import com.kaige.service.BlogService;
 import com.kaige.service.RedisService;
 import com.kaige.utils.markdown.MarkdownUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.Predicate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static java.lang.String.format;
 
 @Service
+@Slf4j
 public class BlogServiceImpl implements BlogService {
 
     @Autowired
@@ -70,6 +71,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public Page<Blog> getBlogListByIsPublished(Integer pageNum) {
+//        从缓存查询
         String redisKey = RedisKeyConstants.HOME_BLOG_INFO_LIST;
         Page<Blog> pageResultFromRedis = redisService.getBlogInfoPageResultByPublish(redisKey,pageNum);
         if(pageResultFromRedis!=null){
@@ -124,6 +126,27 @@ public class BlogServiceImpl implements BlogService {
                                 .password()
                 )).fetchOne();
         return blog.password();
+    }
+
+    @Override
+    public List<Blog> getSearchBlogListByQueryAndPublished(String trim) {
+        
+        List<Blog> searchBlogListByQueryAndPublished = blogRepository.getSearchBlogListByQueryAndPublished(trim);
+//       只显示 以目标字符串 为中心的 21个字符
+        for (Blog blog : searchBlogListByQueryAndPublished) {
+            String content = blog.content();
+            int index = content.indexOf(trim);
+            int start = Math.max(0, index - 10);
+            int end = Math.min(content.length(), index + trim.length() + 10);
+            String substring = content.substring(start, end);
+
+            Blog blog1 = Immutables.createBlog(blog, it -> {
+                it.setContent(substring);
+            });
+//          System.out.println(blog1.toString());
+            searchBlogListByQueryAndPublished.set(searchBlogListByQueryAndPublished.indexOf(blog),blog1);
+        }
+        return searchBlogListByQueryAndPublished;
     }
 
     /**

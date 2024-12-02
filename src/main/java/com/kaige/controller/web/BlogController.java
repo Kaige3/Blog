@@ -11,11 +11,14 @@ import com.kaige.service.BlogService;
 import com.kaige.service.UserService;
 import com.kaige.service.impl.UserServiceImpl;
 import com.kaige.utils.JwtUtils;
+import com.kaige.utils.StringUtils;
 import org.babyfish.jimmer.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class BlogController {
@@ -89,6 +92,16 @@ public class BlogController {
         }else {
             return Result.create(403,"密码错误");
         }
+    }
+
+    @GetMapping("/searchBlog")
+//    TODO 能否用ES 优化 模糊查询
+    public Result searchBlog(@RequestParam String query){
+        if (StringUtils.isEmpty(query) || StringUtils.hasSpecialChar(query) || query.trim().length() > 20){
+            return Result.error("参数有误");
+        }
+        List<Blog> blogs = blogService.getSearchBlogListByQueryAndPublished(query.trim());
+        return Result.ok("获取成功",blogs);
     }
 
 }
