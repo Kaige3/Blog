@@ -1,0 +1,55 @@
+package com.kaige.controller.web;
+
+import com.kaige.constant.JwtConstant;
+import com.kaige.entity.Moment;
+import com.kaige.entity.Result;
+import com.kaige.entity.User;
+import com.kaige.service.MomentService;
+import com.kaige.service.UserService;
+import com.kaige.service.impl.UserServiceImpl;
+import com.kaige.utils.JwtUtils;
+import org.babyfish.jimmer.Page;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class MomentController {
+
+    @Autowired
+    private MomentService momentService;
+    @Autowired
+    private UserServiceImpl userService;
+
+    @GetMapping("/moments")
+    public Result moments(@RequestParam(defaultValue = "1")Integer pageNum,
+                          @RequestHeader(value = "Authorization",defaultValue = "")String jwt){
+//        博主身份
+        boolean adminIdentity = false;
+        if(JwtUtils.judgeTokenIsExist(jwt)){
+//              解析token
+            try {
+                String subject = JwtUtils.getTokenBody(jwt).getSubject();
+                if(subject.startsWith(JwtConstant.ADMIN_PREFIX)){
+    //                用户名
+                    String username = subject.replace(JwtConstant.ADMIN_PREFIX, "");
+                    User AdminUser = (User) userService.loadUserByUsername(username);
+                    if(AdminUser!= null){
+                        adminIdentity = true;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Page<Moment> momentPage = momentService.getMomentList(pageNum,adminIdentity);
+        return Result.ok("获取成功",momentPage);
+    }
+
+
+
+}

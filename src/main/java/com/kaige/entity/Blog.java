@@ -1,7 +1,9 @@
 package com.kaige.entity;
 
 import jakarta.annotation.Nullable;
+import org.babyfish.jimmer.Formula;
 import org.babyfish.jimmer.sql.*;
+import org.babyfish.jimmer.sql.ast.Predicate;
 
 import javax.validation.constraints.Null;
 
@@ -35,6 +37,25 @@ public interface Blog {
      * 文章正文
      */
     String content();
+
+//    返回以 query为中心的 21个字符
+//    @Formula(dependencies = "content")
+//    default String content2(String query){
+//        int index = content().indexOf(query);
+//        int start = Math.max(0,index - 10);
+//        int end = Math.min(content().length(),index +query.length() + 10);
+//        String substring = content().substring(start, end);
+//        return substring;
+//    }
+
+//    @Formula(dependencies = "content")
+//     default String content2(){
+//        return Predicate.sql("regexp_like(%e,%v)",
+//                it ->
+//                it.expression())  // 传入正则表达式参数
+//                .value("content", content()  // 传入 content 字段
+//    }
+
 
     /**
      * 描述

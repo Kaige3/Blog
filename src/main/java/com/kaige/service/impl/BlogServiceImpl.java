@@ -130,7 +130,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public List<Blog> getSearchBlogListByQueryAndPublished(String trim) {
-        
+
         List<Blog> searchBlogListByQueryAndPublished = blogRepository.getSearchBlogListByQueryAndPublished(trim);
 //       只显示 以目标字符串 为中心的 21个字符
         for (Blog blog : searchBlogListByQueryAndPublished) {
