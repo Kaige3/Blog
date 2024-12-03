@@ -12,10 +12,7 @@ import org.babyfish.jimmer.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class MomentController {
@@ -50,6 +47,13 @@ public class MomentController {
         return Result.ok("获取成功",momentPage);
     }
 
-
-
+    @PostMapping("/moment/like/{id}")
+    public Result like(@PathVariable Long id){
+        Integer i = momentService.addLikeByMomentId(id);
+        if (i==1){
+            return Result.ok("点赞成功");
+        }else {
+            return Result.error("点赞失败");
+        }
+    }
 }
