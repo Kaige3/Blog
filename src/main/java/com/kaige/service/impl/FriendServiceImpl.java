@@ -36,12 +36,13 @@ public class FriendServiceImpl implements FriendService {
     @Override
     public FriendInfoVo getSiteFriendinfo() {
         SiteSettingTable siteSettingTable = SiteSettingTable.$;
-
+//        从redis中获取
         String redisKey = RedisKeyConstants.FRIEND_INFO_MAP;
         FriendInfoVo friendInfoVo = redisService.getObjectByValue(redisKey, FriendInfoVo.class);
         if(friendInfoVo!= null){
             return friendInfoVo;
         }
+//       redis中没有，从数据库中获取
         List<SiteSetting> settingListOfFriend = sqlClient.createQuery(siteSettingTable)
                 .where(siteSettingTable.type().eq(4))
                 .select(siteSettingTable.fetch(

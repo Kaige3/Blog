@@ -6,6 +6,7 @@ import com.kaige.handler.exception.PersistenceException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -39,6 +40,12 @@ public class ControllerExceptionHandler {
     public Result notFoundExceptionHandler(HttpServletRequest request, NotFoundException e) {
         logger.error("Request URL ; {},Exception:",request.getRequestURL(),e);
         return Result.create(404,e.getMessage());
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public Result usernameNotFoundExceptionHandler(HttpServletRequest request, UsernameNotFoundException e) {
+        logger.error("Request URL ; {},Exception:",request.getRequestURL(),e);
+        return Result.create(404,"用户名或密码错误");
     }
 
 }

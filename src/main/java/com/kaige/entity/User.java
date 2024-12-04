@@ -1,17 +1,22 @@
 package com.kaige.entity;
 
 import org.babyfish.jimmer.sql.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Entity for table "user"
  */
 @Entity
 @Table(name = "user")
-public interface User {
+public interface User{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY
@@ -57,5 +62,13 @@ public interface User {
      * 角色访问权限
      */
     String role();
+
+//    @Override
+//    default List<? extends GrantedAuthority> getAuthorities() {
+//        // 返回用户的角色权限，Spring Security会根据这些权限控制访问
+//        List<GrantedAuthority> authorities = new ArrayList<>();
+//        authorities.add(new SimpleGrantedAuthority(role()));
+//        return authorities;
+//    }
 }
 

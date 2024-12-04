@@ -1,5 +1,6 @@
 package com.kaige.utils;
 
+import com.kaige.entity.Result;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -105,10 +106,7 @@ public class JwtUtils {
 	 * @param token
 	 * @return
 	 */
-//	public static Claims getTokenBody(String token) {
-//		Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token.replace("Bearer", "")).getBody();
-//		return claims;
-//	}
+
 	public static Claims getTokenBody(String token) {
 		Claims claims = Jwts.parser()
 				.setSigningKey(secretKey)  // 设置签名密钥
@@ -116,5 +114,9 @@ public class JwtUtils {
 				.getBody();
 		return claims;
 	}
+
+
+
+
 
 }

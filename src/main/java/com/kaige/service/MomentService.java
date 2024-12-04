@@ -5,4 +5,6 @@ import org.babyfish.jimmer.Page;
 
 public interface MomentService {
     Page<Moment> getMomentList(Integer pageNum, boolean adminIdentity);
+
+    Integer addLikeByMomentId(Long id);
 }

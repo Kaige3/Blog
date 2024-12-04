@@ -19,4 +19,8 @@ public interface BlogService {
     String getBlogPassword(BigInteger id);
 
     List<Blog> getSearchBlogListByQueryAndPublished(String trim);
+
+    Boolean getCommentEnabledByBlogId(Long blogId);
+
+    Boolean getPublishedByBlogId(Long blogId);
 }

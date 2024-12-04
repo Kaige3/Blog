@@ -35,8 +35,8 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	public void commence(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, AuthenticationException authException) throws IOException, jakarta.servlet.ServletException {
 			response.setContentType("application/json;charset=utf-8");
 			PrintWriter out = response.getWriter();
-		String message = authException.getMessage();
-		Result result = Result.create(403, message);
+//		String message = authException.getMessage();
+		Result result = Result.create(403, "后台登录 账号或密码错误");
 			out.write(JacksonUtils.writeValueAsString(result));
 			out.flush();
 			out.close();

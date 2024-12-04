@@ -31,7 +31,6 @@ public class BlogServiceImpl implements BlogService {
     @Autowired
     private BlogRepository blogRepository;
 
-
     private JSqlClient jSqlClient;
     public BlogServiceImpl(JSqlClient jSqlClient) {
         this.jSqlClient = jSqlClient;
@@ -150,10 +149,30 @@ public class BlogServiceImpl implements BlogService {
     }
 
     /**
+     * 查询对应的博客是否开启 评论
+     * @param blogId
+     * @return
+     */
+    @Override
+    public Boolean getCommentEnabledByBlogId(Long blogId) {
+        return blogRepository.getCommentEnabledByBlogId(blogId);
+    }
+
+    /**
+     * 查询博客是否公开
+     * @param blogId
+     * @return
+     */
+    @Override
+    public Boolean getPublishedByBlogId(Long blogId) {
+        return blogRepository.getPublisheByBlogId(blogId);
+    }
+
+    /**
      文章归档  按照年月  统计文章数量
       */
     @Override
-    //TODO 完善字段显示，createTIme格式化
+    //TODO 完善字段显示，createTIme格式化--> 18日
     //TODO 从缓存查询未实现
     public Map<String, Object> getArchiveBlogAndCountByIsPublished() {
 //        查缓存

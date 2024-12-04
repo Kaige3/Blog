@@ -45,8 +45,8 @@ public class SecurityConfig{
     @Bean
     public AuthenticationManager authenticationManager(BCryptPasswordEncoder bCryptPasswordEncoder) throws Exception {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        // 设置自定义 userDetailsService，从数据库查询用户信息
-//        daoAuthenticationProvider.setUserDetailsService(userService);
+//         设置自定义 userDetailsService，从数据库查询用户信息
+        daoAuthenticationProvider.setUserDetailsService(userService);
         // 设置密码加密器
         daoAuthenticationProvider.setPasswordEncoder(bCryptPasswordEncoder);
         return new ProviderManager(daoAuthenticationProvider);
@@ -55,7 +55,7 @@ public class SecurityConfig{
     @Bean
     SecurityFilterChain securityFilterChain(@NotNull HttpSecurity http) throws Exception {
          http.
-            // 禁用 csrf防御，因为不使用session
+                // 禁用 csrf防御，因为不使用session
                  csrf(AbstractHttpConfigurer::disable)
                  // 不通过Session获取SecurityContext
                  .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -64,7 +64,7 @@ public class SecurityConfig{
                   .requestMatchers("/admin/webTitleSffix").permitAll()
                  .requestMatchers(HttpMethod.GET,"/admin/**").hasAnyRole("admin","visitor")
                  .requestMatchers("/admin/**").hasRole("admin")
-                  // 除上面外的所有请求全部需要鉴权认证
+                  // 除上面外的所有请求, 全部放行
                  .anyRequest().permitAll())
                  .addFilterBefore(new JwtLoginFilter("/admin/login",loginLogService), UsernamePasswordAuthenticationFilter.class)
                  .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class)

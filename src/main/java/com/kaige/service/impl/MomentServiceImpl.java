@@ -2,6 +2,7 @@ package com.kaige.service.impl;
 
 import com.kaige.entity.Immutables;
 import com.kaige.entity.Moment;
+import com.kaige.entity.MomentTable;
 import com.kaige.repository.MomentRepository;
 import com.kaige.service.MomentService;
 import com.kaige.utils.markdown.MarkdownUtils;
@@ -9,6 +10,7 @@ import org.babyfish.jimmer.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Service
@@ -16,6 +18,8 @@ public class MomentServiceImpl implements MomentService {
 
     @Autowired
     private MomentRepository momentRepository;
+
+    MomentTable momentTable = MomentTable.$;
 
     private static final String PRIVATE_MOMENT_CONTENT = "<p>此条为私密动态，仅发布者可见！</p>";
     @Override
@@ -29,9 +33,7 @@ public class MomentServiceImpl implements MomentService {
         if (totalItems % pageSize != 0) {
             totalPages ++;
         }
-
 // 这样 totalPages 就是总页数
-
         for (Moment moment : momentList) {
             if(adminIdentity || moment.Published()){
                 Moment moment1 = Immutables.createMoment(moment,it -> {
@@ -47,5 +49,15 @@ public class MomentServiceImpl implements MomentService {
         }
         Page<Moment> momentPage = new Page<>(momentList,momentList.size(),totalPages);
         return momentPage;
+    }
+
+    @Override
+    public Integer addLikeByMomentId(Long id) {
+//        对应id 的likes +1
+        return momentRepository.sql().createUpdate(momentTable)
+                .where(momentTable.id().eq(BigInteger.valueOf(id)))
+                .set(momentTable.likes(),momentTable.likes().plus(1))
+                .execute();
+
     }
 }
