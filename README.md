@@ -1,6 +1,5 @@
 ## 学习于 https://github.com/Naccl/NBlog
-### 后端使用jimmer替换mybatis,参考Naccl的业务逻辑，redis使用，工具类设计
-
+后端使用jimmer替换mybatis,参考Naccl的业务逻辑，redis使用，工具类设计。
 ### 后端
 1. 核心框架：Spring Boot
 2. 安全框架：Spring Security
@@ -13,4 +12,4 @@
 9. 定时任务：quartz
 10. UserAgent 解析：yauaa
 ### 前端
--使用Naccl前台设计-
+**使用Naccl前台设计**
