@@ -40,6 +40,9 @@ public class CommentController {
             }
             case PASSWORD -> TokenAndPasswordVerify.judgeTokenAndPasswordIsOK(jwt,blogId);
         }
+//        该页面所有评论的 数量
+        Integer addComment = commentService.getcountByPageAndIsPublished(page,blogId,null);
+//        改页面所有公布评论的 数量
         List<Comment> commentPage = commentService.getPageCommentList(page,blogId);
         return Result.ok("你好了",commentPage);
     }

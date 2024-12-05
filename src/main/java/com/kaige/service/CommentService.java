@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface CommentService {
     List<Comment> getPageCommentList(Integer page, Long blogId);
+
+    Integer getcountByPageAndIsPublished(Integer page, Long blogId, Object o);
 }

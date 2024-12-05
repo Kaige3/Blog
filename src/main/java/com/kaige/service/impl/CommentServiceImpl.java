@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -27,7 +28,6 @@ public class CommentServiceImpl implements CommentService {
             // 获取所有的子评论
             List<Comment> list = new ArrayList<>();
             getReplyComments(list, comment.childComment());
-
             // 排序子评论列表
             list.sort(Comparator.comparing(Comment::createTime).reversed());
             System.out.println(list);
@@ -35,16 +35,19 @@ public class CommentServiceImpl implements CommentService {
             Comment comment1 = Immutables.createComment(comment, newComment -> {
                 newComment.setChildComment(list);  // 更新排序后的子评论列表
             });
-
-
             // 替换原评论列表中的评论
             commentList.set(commentList.indexOf(comment), comment1);
         }
-
         // 如果你需要排序父评论的 createTime
 //        commentList.sort(Comparator.comparing(Comment::createTime));
 
         return commentList;
+    }
+
+    @Override
+    public Integer getcountByPageAndIsPublished(Integer page, Long blogId, Object o) {
+        Integer i = commentRepository.getcountByPageAndIsPublished(page, blogId, o);
+        return i;
     }
 
 //    public List<Comment> getPageCommentList(Integer page, Long blogId) {
@@ -64,6 +67,7 @@ public class CommentServiceImpl implements CommentService {
 //            return commentList;
 //    }
 
+//    获取子评论列表 放在 list中
     private void getReplyComments(List<Comment> list, List<Comment> comments) {
         for(Comment c:comments){
             list.add(c);
