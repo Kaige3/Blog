@@ -1,20 +1,28 @@
 package com.kaige.controller.web;
 
+import com.kaige.entity.Comment;
 import com.kaige.entity.Result;
 import com.kaige.enums.CommentOpenStateEnum;
+import com.kaige.service.CommentService;
 import com.kaige.utils.TokenAndPasswordVerify;
 import com.kaige.utils.comment.CommentUtils;
+import org.babyfish.jimmer.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigInteger;
+import java.util.List;
+
 @RestController
 public class CommentController {
 
     @Autowired
     CommentUtils commentUtils;
+    @Autowired
+    private CommentService commentService;
 
     @GetMapping("/comments")
     public Result comments(@RequestParam Integer page,
@@ -32,7 +40,8 @@ public class CommentController {
             }
             case PASSWORD -> TokenAndPasswordVerify.judgeTokenAndPasswordIsOK(jwt,blogId);
         }
-        return Result.ok("你好了");
+        List<Comment> commentPage = commentService.getPageCommentList(page,blogId);
+        return Result.ok("你好了",commentPage);
     }
 
 

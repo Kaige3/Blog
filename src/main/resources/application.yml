@@ -32,7 +32,7 @@ jimmer:
   pretty-sql: true
   database-validation:
     catalog: Kaige_blog
-    mode: ERROR
+    mode:
 
 token:
   expireTime: 259200000

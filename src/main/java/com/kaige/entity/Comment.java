@@ -1,8 +1,7 @@
 package com.kaige.entity;
 
-import org.babyfish.jimmer.Formula;
+import jakarta.annotation.Nullable;
 import org.babyfish.jimmer.sql.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.constraints.Null;
 
@@ -14,6 +13,7 @@ import java.util.List;
  * Entity for table "comment"
  */
 @Entity
+@Table(name = "comment")
 public interface Comment {
 
     @Id
@@ -57,35 +57,42 @@ public interface Comment {
      * 公开或回收站
      */
     @Column(name = "is_published")
-    boolean Published();
+    Boolean Published();
 
     /**
      * 博主回复
      */
-    @Column(name = "is_admin_comment")
-    boolean AdminComment();
+    Boolean isAdminComment();
 
     /**
      * 0普通文章 1关于我的页面 2友链页面
      */
-    int page();
+    Integer page();
 
     /**
      * 接收邮件提醒
      */
-    @Column(name = "is_notice")
-    boolean Notice();
+    Boolean isNotice();
 
     /**
      * 所属的文章
      */
-    @Null
-    Integer blogId();
+    @Nullable
+    BigInteger blogId();
+
+//    @Null
+//    BigInteger parentCommentId();
 
     /**
-     * 父评论id,-1为根评论
+     * 父评论
      */
-    int parentCommentId();
+    @Nullable
+    @ManyToOne()
+    @JoinColumn(name = "parent_comment_id")
+    Comment parent();
+
+    @OneToMany(mappedBy = "parent")
+    List<Comment> childComment();
 
     /**
      * 个人网站
@@ -98,6 +105,5 @@ public interface Comment {
      */
     @Null
     String qq();
-
 }
 
