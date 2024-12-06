@@ -12,19 +12,20 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public interface CommentRepository extends JRepository<Comment,Long>, Tables {
+public interface CommentRepository extends JRepository<Comment,Integer>, Tables {
 
     CommentTable commentTable = CommentTable.$;
 
     default List<Comment> getPageCommentList(Integer page, Long blogId) {
-//        BigInteger blogid1= (BigInteger)blogId;
         BigInteger blogid1 = null;
         if (blogId != null) {
             blogid1 = BigInteger.valueOf(blogId);
         }
         return  sql().createQuery(commentTable)
-                .where(commentTable.page().eq(page))
+//                .whereIf( page == 0 && blogId !=null,commentTable.blogId().eq(blogid1))
+//                .whereIf(commentTable.blogId().eqIf(blogId !=null, blogid1))
                 .whereIf(blogId !=null && page == 0,commentTable.blogId().eq(blogid1))
+                .where(commentTable.page().eq(page))
                 .where(commentTable.Published().eq(true))
                 .where(commentTable.parentId().isNull())
                 .select(commentTable.fetch(
@@ -41,13 +42,16 @@ public interface CommentRepository extends JRepository<Comment,Long>, Tables {
     }
 
     default Integer getcountByPageAndIsPublished(Integer page, Long blogId, Object o) {
-        List<Long> execute = sql().createQuery(commentTable)
-                .whereIf(o != null, commentTable.Published().eq((Expression<Boolean>) o))
-                .whereIf(page == 0 && blogId != 0, commentTable.blogId().eq(BigInteger.valueOf(blogId)))
+        BigInteger blogid1 = null;
+        if (blogId != null) {
+            blogid1 = BigInteger.valueOf(blogId);
+        }
+        return Math.toIntExact(sql().createQuery(commentTable)
+                .whereIf(o != null, commentTable.Published().eq(true))
+                .whereIf(page == 0 && blogId != 0, commentTable.blogId().eq(blogid1))
                 .where(commentTable.page().eq(page))
-                .select(commentTable.count())
-                .execute();
-        return execute.size();
+                .select(commentTable)
+                .fetchUnlimitedCount());
 
 
     }

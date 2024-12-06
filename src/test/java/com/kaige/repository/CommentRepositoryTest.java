@@ -1,6 +1,7 @@
 package com.kaige.repository;
 
 import com.kaige.entity.Comment;
+import com.kaige.entity.CommentFetcher;
 import com.kaige.entity.CommentTable;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.Expression;
@@ -28,7 +29,8 @@ class CommentRepositoryTest {
     @Test
     void getcountByPageAndIsPublished() {
         long l = commentRepository.sql().createQuery(commentTable)
-                .where(commentTable.page().eq(2))
+                .where(commentTable.page().eq(1))
+                .where(commentTable.Published().eq(false))
                 .select(commentTable)
                 .fetchUnlimitedCount();
 
@@ -37,5 +39,26 @@ class CommentRepositoryTest {
 //            System.out.println("当前的数"+object);
 //        }
         System.out.println("有几条评论"+l);
+    }
+
+//    查询公开评论列表
+    @Test
+    void getPageCommentList() {
+        List<Comment> execute = commentRepository.sql().createQuery(commentTable)
+                .where(commentTable.page().eq(1))
+                .where(commentTable.Published().eq(true))
+                .where(commentTable.parentId().isNull())
+                .select(commentTable.fetch(
+                        CommentFetcher.$
+                                .nickname()
+                                .content()
+                                .avatar()
+                                .createTime()
+                                .website()
+                                .isAdminComment()
+                                .parent(CommentFetcher.$.nickname())
+                                .recursiveChildComment()
+                )).execute();
+        System.out.println(execute);
     }
 }

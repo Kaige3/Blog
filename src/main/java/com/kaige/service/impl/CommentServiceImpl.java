@@ -46,26 +46,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Integer getcountByPageAndIsPublished(Integer page, Long blogId, Object o) {
-        Integer i = commentRepository.getcountByPageAndIsPublished(page, blogId, o);
-        return i;
+        return commentRepository.getcountByPageAndIsPublished(page, blogId, o);
     }
-
-//    public List<Comment> getPageCommentList(Integer page, Long blogId) {
-//            List<Comment> commentList = commentRepository.getPageCommentList(page,blogId);
-//            for (Comment comment : commentList){
-//                List<Comment> list = new ArrayList<>();
-//                getReplyComments(list,comment.childComment());
-////                排序子评论列表
-//                Comparator<Comment> comparing = Comparator.comparing(Comment::id);
-//                list.sort(comparing);
-//
-//                Comment comment1 = Immutables.createComment(comment, newComment -> {
-//                    newComment.setChildComment(list);
-//                });
-//                commentList.set(commentList.indexOf(comment),comment1);
-//            }
-//            return commentList;
-//    }
 
 //    获取子评论列表 放在 list中
     private void getReplyComments(List<Comment> list, List<Comment> comments) {
