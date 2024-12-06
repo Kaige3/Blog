@@ -7,6 +7,8 @@ import com.kaige.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigInteger;
+
 @Component
 public class TokenAndPasswordVerify {
 
@@ -17,8 +19,7 @@ public class TokenAndPasswordVerify {
         this.userService = userService;
     }
 
-
-    public static Result judgeTokenAndPasswordIsOK(String jwt,Long id) {
+    public static Result judgeTokenAndPasswordIsOK(String jwt, BigInteger id) {
         if (JwtUtils.judgeTokenIsExist(jwt)) {
             try {
                 String subject = JwtUtils.getTokenBody(jwt).getSubject();

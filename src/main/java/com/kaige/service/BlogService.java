@@ -20,7 +20,7 @@ public interface BlogService {
 
     List<Blog> getSearchBlogListByQueryAndPublished(String trim);
 
-    Boolean getCommentEnabledByBlogId(Long blogId);
+    Boolean getCommentEnabledByBlogId(BigInteger blogId);
 
-    Boolean getPublishedByBlogId(Long blogId);
+    Boolean getPublishedByBlogId(BigInteger blogId);
 }

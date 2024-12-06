@@ -154,7 +154,7 @@ public class BlogServiceImpl implements BlogService {
      * @return
      */
     @Override
-    public Boolean getCommentEnabledByBlogId(Long blogId) {
+    public Boolean getCommentEnabledByBlogId(BigInteger blogId) {
         return blogRepository.getCommentEnabledByBlogId(blogId);
     }
 
@@ -164,7 +164,7 @@ public class BlogServiceImpl implements BlogService {
      * @return
      */
     @Override
-    public Boolean getPublishedByBlogId(Long blogId) {
+    public Boolean getPublishedByBlogId(BigInteger blogId) {
         return blogRepository.getPublisheByBlogId(blogId);
     }
 

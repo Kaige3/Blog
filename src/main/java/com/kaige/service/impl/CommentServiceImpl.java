@@ -21,7 +21,7 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private CommentRepository commentRepository;
     @Override
-    public List<Comment> getPageCommentList(Integer page, Long blogId) {
+    public List<Comment> getPageCommentList(Integer page, BigInteger blogId) {
         List<Comment> commentList = commentRepository.getPageCommentList(page, blogId);
 
         for (Comment comment : commentList) {
@@ -45,11 +45,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Integer getcountByPageAndIsPublished(Integer page, Long blogId, Object o) {
+    public Integer getcountByPageAndIsPublished(Integer page, BigInteger blogId, Object o) {
         return commentRepository.getcountByPageAndIsPublished(page, blogId, o);
     }
 
-//    获取子评论列表 放在 list中
+    @Override
+    public Comment getCommentById(BigInteger parentCommentId) {
+        return commentRepository.getCommentById(parentCommentId);
+    }
+
+    //    获取子评论列表 放在 list中
     private void getReplyComments(List<Comment> list, List<Comment> comments) {
         for(Comment c:comments){
             list.add(c);

@@ -26,7 +26,7 @@ public class CommentUtils {
     }
 
 
-    public CommentOpenStateEnum judgeCommentState(Integer page,Long blogId){
+    public CommentOpenStateEnum judgeCommentState(Integer page,BigInteger blogId){
          switch (page){
              case PageConstants.BLOG:
 //                 博客页面
@@ -43,7 +43,7 @@ public class CommentUtils {
 //                     评论已关闭
                      return CommentOpenStateEnum.CLOSE;
                  }
-                 String blogPassword = blogService.getBlogPassword(BigInteger.valueOf(blogId));
+                 String blogPassword = blogService.getBlogPassword(blogId);
                  if (!StringUtils.isEmpty(blogPassword)) {
 //                  密码不正确
                      return CommentOpenStateEnum.PASSWORD;

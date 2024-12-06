@@ -61,4 +61,16 @@ class CommentRepositoryTest {
                 )).execute();
         System.out.println(execute);
     }
+
+    @Test
+    void getCommentById() {
+        Comment comment = commentRepository.sql().createQuery(commentTable)
+                .where(commentTable.id().eq(BigInteger.valueOf(1)))
+                .select(commentTable.fetch(
+                        CommentFetcher.$
+                                .allTableFields()
+                ))
+                .fetchOneOrNull();
+        System.out.println(comment);
+    }
 }

@@ -16,15 +16,15 @@ public interface CommentRepository extends JRepository<Comment,Integer>, Tables 
 
     CommentTable commentTable = CommentTable.$;
 
-    default List<Comment> getPageCommentList(Integer page, Long blogId) {
-        BigInteger blogid1 = null;
-        if (blogId != null) {
-            blogid1 = BigInteger.valueOf(blogId);
-        }
+    default List<Comment> getPageCommentList(Integer page, BigInteger blogId) {
+//        BigInteger blogid1 = null;
+//        if (blogId != null) {
+//            blogid1 = BigInteger.valueOf(blogId);
+//        }
         return  sql().createQuery(commentTable)
 //                .whereIf( page == 0 && blogId !=null,commentTable.blogId().eq(blogid1))
 //                .whereIf(commentTable.blogId().eqIf(blogId !=null, blogid1))
-                .whereIf(blogId !=null && page == 0,commentTable.blogId().eq(blogid1))
+                .whereIf(blogId !=null && page == 0,commentTable.blogId().eq(blogId))
                 .where(commentTable.page().eq(page))
                 .where(commentTable.Published().eq(true))
                 .where(commentTable.parentId().isNull())
@@ -41,18 +41,28 @@ public interface CommentRepository extends JRepository<Comment,Integer>, Tables 
                 )).execute();
     }
 
-    default Integer getcountByPageAndIsPublished(Integer page, Long blogId, Object o) {
-        BigInteger blogid1 = null;
-        if (blogId != null) {
-            blogid1 = BigInteger.valueOf(blogId);
-        }
+    default Integer getcountByPageAndIsPublished(Integer page, BigInteger blogId, Object o) {
+//        BigInteger blogid1 = null;
+//        if (blogId != null) {
+//            blogid1 = BigInteger.valueOf(blogId);
+//        }
         return Math.toIntExact(sql().createQuery(commentTable)
                 .whereIf(o != null, commentTable.Published().eq(true))
-                .whereIf(page == 0 && blogId != 0, commentTable.blogId().eq(blogid1))
+                .whereIf(page == 0 && !blogId.equals(BigInteger.valueOf(0)), commentTable.blogId().eq(blogId))
                 .where(commentTable.page().eq(page))
                 .select(commentTable)
                 .fetchUnlimitedCount());
 
 
+    }
+
+    default Comment getCommentById(BigInteger parentCommentId) {
+        return sql().createQuery(commentTable)
+                .where(commentTable.id().eq(parentCommentId))
+                .select(commentTable.fetch(
+                        CommentFetcher.$
+                                .allTableFields()
+                ))
+                .fetchOneOrNull();
     }
 }

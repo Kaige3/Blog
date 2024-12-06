@@ -1,0 +1,19 @@
+input CommentInput {
+    id
+    nickname
+    email
+    content
+    avatar
+    createTime
+    website
+    ip
+    Published as published
+    isAdminComment as adminComment
+    page
+    isNotice as notice
+    flat(parent){
+    id as parentCommentId
+    }
+    blogId
+    qq
+}

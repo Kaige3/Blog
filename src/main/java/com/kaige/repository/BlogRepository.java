@@ -41,9 +41,9 @@ public interface BlogRepository extends JRepository<Blog,Long>, Tables {
                 .execute();
     }
 
-   default Boolean getCommentEnabledByBlogId(Long blogId){
+   default Boolean getCommentEnabledByBlogId(BigInteger blogId){
        @Nullable Blog blog1 = sql().createQuery(blog)
-               .where(blog.id().eq(BigInteger.valueOf(blogId)))
+               .where(blog.id().eq(blogId))
                .select(blog.fetch(
                        BlogFetcher.$
                                .CommentEnabled()
@@ -53,14 +53,15 @@ public interface BlogRepository extends JRepository<Blog,Long>, Tables {
        return blog1.CommentEnabled();
    }
 
-   default Boolean getPublisheByBlogId(Long blogId){
+   default Boolean getPublisheByBlogId(BigInteger blogId){
        Blog blog1 = sql().createQuery(blog)
-               .where(blog.id().eq(BigInteger.valueOf(blogId)))
+               .where(blog.id().eq(blogId))
                .select(blog.fetch(
                        BlogFetcher.$
                                .Published()
                ))
                .fetchOneOrNull();
+       assert blog1 != null;
        return blog1.Published();
    }
 }
