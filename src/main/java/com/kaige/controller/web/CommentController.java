@@ -1,10 +1,15 @@
 package com.kaige.controller.web;
 
+import com.kaige.constant.JwtConstant;
 import com.kaige.entity.Comment;
 import com.kaige.entity.Result;
+import com.kaige.entity.User;
 import com.kaige.entity.dto.CommentInput;
 import com.kaige.enums.CommentOpenStateEnum;
 import com.kaige.service.CommentService;
+import com.kaige.service.UserService;
+import com.kaige.service.impl.UserServiceImpl;
+import com.kaige.utils.JwtUtils;
 import com.kaige.utils.StringUtils;
 import com.kaige.utils.TokenAndPasswordVerify;
 import com.kaige.utils.comment.CommentUtils;
@@ -12,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.babyfish.jimmer.Page;
 import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -25,6 +31,8 @@ public class CommentController {
     CommentUtils commentUtils;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private UserServiceImpl userService;
 
     /**
      * 根据页面分页 查询评论列表
@@ -92,7 +100,7 @@ public class CommentController {
             return Result.error("参数有误");
         }
         //        是否访客的评论
-        boolean isVisitorComment = false;
+        boolean isVisitorComment = true;
         //        父评论
         Comment parentComment = null;
         //        对于有指定 父评论的评论，应该已父评论为准，只判断页面 可能会绕过 “评论开启状态检测
@@ -110,7 +118,40 @@ public class CommentController {
             }
         }
 //      判断是否可评论
-        commentUtils.judgeCommentState(comment.getPage(),comment.getBlogId());
+        CommentOpenStateEnum commentOpenStateEnum = commentUtils.judgeCommentState(comment.getPage(), comment.getBlogId());
+        switch (commentOpenStateEnum){
+            case NOT_FOUND -> {
+                return Result.create(404,"改博客不存在");
+            }
+            case CLOSE -> {
+                return Result.create(403,"评论已关闭");
+            }
+            case PASSWORD -> {
+//                //文章受密码保护，校验token 有效性
+//               这个工具类写的不是很匹配
+//                TokenAndPasswordVerify.judgeTokenAndPasswordIsOK(jwt,comment.getBlogId());
+                if (JwtUtils.judgeTokenIsExist(jwt)){
+                    String subject;
+                    try {
+                        subject = JwtUtils.getTokenBody(jwt).getSubject();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Result.create(403,"Token已失效，请重新验证密码");
+                    }
+//                    博主评论不受密码保护限制，根据博主信息设置评论属性
+                    if(subject.startsWith(JwtConstant.ADMIN_PREFIX)){
+                        String userName = subject.replace(JwtConstant.ADMIN_PREFIX, "");
+                        User userDetails = (User) userService.loadUserByUsername(userName);
+                        if (userDetails==null){
+                            return Result.create(403,"博主身份已过期，请重新登录");
+                        }
+                        //设置博主评论 主要信息
+                        Comment AdminComment = commentUtils.setAdminComment(comment,request,userDetails);
+                        isVisitorComment = false;
+                    }
+                }
+            }
+        }
         return null;
     }
 

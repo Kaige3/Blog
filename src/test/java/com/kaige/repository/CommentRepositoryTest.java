@@ -1,8 +1,6 @@
 package com.kaige.repository;
 
-import com.kaige.entity.Comment;
-import com.kaige.entity.CommentFetcher;
-import com.kaige.entity.CommentTable;
+import com.kaige.entity.*;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.Expression;
 import org.babyfish.jimmer.sql.ast.Predicate;
@@ -72,5 +70,18 @@ class CommentRepositoryTest {
                 ))
                 .fetchOneOrNull();
         System.out.println(comment);
+    }
+    @Test
+    void Save(){
+        Comment comment = commentRepository.sql().createQuery(commentTable)
+                .where(commentTable.id().eq(BigInteger.valueOf(1)))
+                .select(commentTable.fetch(
+                        CommentFetcher.$
+                                .allTableFields()
+                )).fetchOneOrNull();
+        System.out.println(comment);
+        Comment kaige = CommentDraft.$.produce(draft -> draft.setNickname("Kaige"));
+        kaige.blogId();
+        System.out.println(kaige);
     }
 }
