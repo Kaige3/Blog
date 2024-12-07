@@ -4,6 +4,7 @@ import com.kaige.entity.Comment;
 import com.kaige.entity.CommentFetcher;
 import com.kaige.entity.CommentTable;
 import com.kaige.entity.Tables;
+import com.kaige.entity.dto.CommentInput;
 import org.babyfish.jimmer.spring.repository.JRepository;
 import org.babyfish.jimmer.sql.ast.Expression;
 import org.springframework.stereotype.Repository;
@@ -35,7 +36,7 @@ public interface CommentRepository extends JRepository<Comment,Integer>, Tables 
                                 .avatar()
                                 .createTime()
                                 .website()
-                                .isAdminComment()
+                                .AdminComment()
                                 .parent(CommentFetcher.$.nickname())
                                 .recursiveChildComment()
                 )).execute();
@@ -64,5 +65,9 @@ public interface CommentRepository extends JRepository<Comment,Integer>, Tables 
                                 .allTableFields()
                 ))
                 .fetchOneOrNull();
+    }
+
+    default boolean saveComment(CommentInput adminComment) {
+        return sql().save(adminComment).isModified();
     }
 }

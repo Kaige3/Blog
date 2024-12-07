@@ -16,6 +16,7 @@ import com.kaige.utils.comment.CommentUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.babyfish.jimmer.Page;
 import org.checkerframework.checker.units.qual.C;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -100,7 +101,7 @@ public class CommentController {
             return Result.error("参数有误");
         }
         //        是否访客的评论
-        boolean isVisitorComment = true;
+        boolean isVisitorComment = false;
         //        父评论
         Comment parentComment = null;
         //        对于有指定 父评论的评论，应该已父评论为准，只判断页面 可能会绕过 “评论开启状态检测
@@ -114,9 +115,10 @@ public class CommentController {
         }else {
         //            当前评论为父评论,非文章页面评论
             if (comment.getPage() != 0){
-                comment.setPage(null);
+                comment.setBlogId(null);
             }
         }
+        System.out.println(comment.getPage());
 //      判断是否可评论
         CommentOpenStateEnum commentOpenStateEnum = commentUtils.judgeCommentState(comment.getPage(), comment.getBlogId());
         switch (commentOpenStateEnum){
@@ -146,13 +148,72 @@ public class CommentController {
                             return Result.create(403,"博主身份已过期，请重新登录");
                         }
                         //设置博主评论 主要信息
-                        Comment AdminComment = commentUtils.setAdminComment(comment,request,userDetails);
+//                        Comment AdminComment = commentUtils.setAdminComment(comment,request,userDetails);
+                         commentUtils.setAdminComment(comment,request,userDetails);
                         isVisitorComment = false;
+//                        commentService.saveComment(AdminComment);
+                    }else {
+                        //普通访客经文章密码验证后携带 Token
+                        //对访客的评论昵称 和 邮箱 合法性校验
+                        if(StringUtils.isEmpty(comment.getNickname(),comment.getEmail()) || comment.getNickname().length()> 15){
+                            return Result.error("参数有误");
+                        }
+//                        对于密码保护的文章，token则使必须的
+                        // 提取 password 中存储的 BlogId,这一步骤对应BlogController 中的 checkBlogPassword()
+                        long tokenBlogId = Long.parseLong(subject);
+                        // 这都是为 最初的类型确立埋下的坑
+                        BigInteger bigInteger = BigInteger.valueOf(tokenBlogId);
+                        if(!bigInteger.equals(comment.getBlogId())){
+                            return Result.create(403,"Token不匹配，请重新验证密码");
+                        }
+                        commentUtils.setVisitorComment(comment,request);
+                        isVisitorComment = true;
                     }
+                }else{//不存在token 无评论权限
+                    return Result.create(403,"此文章受密码保护,请验证密码!");
+                }
+            }
+            case OPEN -> {
+                //评论正常开放
+                //有token 的则为博主评论,或原先有密码保护(后取消),但是token在 client 仍未过期
+                if(JwtUtils.judgeTokenIsExist(jwt)){
+                    //两种情况 1.在博主下可以拿到 username 2.在密码保护下,但是游客评论,忽略密码校验
+                    String subject;
+                    try {
+                        subject = JwtUtils.getTokenBody(jwt).getSubject();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Result.create(403,"token已失效,请重新验证密码");
+                    }
+                    //博主评论
+                    if (subject.startsWith(JwtConstant.ADMIN_PREFIX)){
+                        //对应第一种情况,拿到username
+                        String username = subject.replace(JwtConstant.ADMIN_PREFIX, "");
+                        User userDetails = (User) userService.loadUserByUsername(username);
+                        if (userDetails == null){
+                            return Result.create(403,"博主身份token已失效,请重新登录");
+                        }
+                        commentUtils.setAdminComment(comment,request,userDetails);
+                        isVisitorComment = false;
+                    }else {
+                        //对应第二种情况,忽略密码校验,对游客的nickName 和 Email进行校验
+                        if(StringUtils.isEmpty(comment.getNickname(),comment.getEmail()) || comment.getNickname().length() > 15){
+                            return Result.error("参数有误");
+                        }
+                        commentUtils.setVisitorComment(comment,request);
+                        isVisitorComment = true;
+                    }
+                }else { //访客评论
+                    if(StringUtils.isEmpty(comment.getNickname(),comment.getEmail()) || comment.getNickname().length() > 15){
+                        return Result.error("参数有误");
+                    }
+                    commentUtils.setVisitorComment(comment,request);
+                    isVisitorComment = true;
                 }
             }
         }
-        return null;
+        commentService.saveComment(comment);
+        return Result.ok("评论成功");
     }
 
 

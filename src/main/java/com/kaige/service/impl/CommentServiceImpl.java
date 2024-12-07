@@ -2,6 +2,8 @@ package com.kaige.service.impl;
 
 import com.kaige.entity.Comment;
 import com.kaige.entity.Immutables;
+import com.kaige.entity.dto.CommentInput;
+import com.kaige.handler.exception.PersistenceException;
 import com.kaige.repository.CommentRepository;
 import com.kaige.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +54,13 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment getCommentById(BigInteger parentCommentId) {
         return commentRepository.getCommentById(parentCommentId);
+    }
+
+    @Override
+    public void saveComment(CommentInput adminComment) {
+         if(!commentRepository.saveComment(adminComment)){
+             throw new PersistenceException("评论失败");
+         }
     }
 
     //    获取子评论列表 放在 list中

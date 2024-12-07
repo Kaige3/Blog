@@ -38,5 +38,9 @@ token:
   expireTime: 259200000
   secretKey: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
 
+comment:
+  notify:
+    channel: mail
+  default-open: true
 
 

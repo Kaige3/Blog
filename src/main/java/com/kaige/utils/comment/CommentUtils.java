@@ -13,11 +13,14 @@ import com.kaige.enums.CommentOpenStateEnum;
 import com.kaige.service.AboutService;
 import com.kaige.service.BlogService;
 import com.kaige.service.FriendService;
+import com.kaige.utils.HashUtils;
 import com.kaige.utils.IpAddressUtils;
 import com.kaige.utils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.babyfish.jimmer.Immutable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
@@ -25,6 +28,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Component
+//指定当前Bean 的初始化 依赖于springContextUtils，确保他们的加载顺序
+@DependsOn("springContextUtils")
 public class CommentUtils {
 
     @Autowired
@@ -32,6 +37,14 @@ public class CommentUtils {
     @Autowired
     private FriendService friendService;
     private static BlogService blogService;
+//    private CommentNotifyChannel
+    private Boolean commentDefaultOpen;
+
+    @Value("true")
+    public void setCommentDefaultOpen(Boolean commentDefaultOpen) {
+        this.commentDefaultOpen = commentDefaultOpen;
+    }
+
     public  void setBlogService(BlogService blogService) {
         CommentUtils.blogService = blogService;
     }
@@ -79,26 +92,79 @@ public class CommentUtils {
             return CommentOpenStateEnum.OPEN;
          }
 
-    public Comment setAdminComment(CommentInput comment, HttpServletRequest request, User userDetails) {
-        Comment comment1 = setGeneralAdminComment(comment, userDetails);
-        Comment comment2 = Immutables.createComment(comment1, it -> {
-            it.setIp(IpAddressUtils.getIpAddress(request));
-        });
-        return comment2;
+    public void setAdminComment(CommentInput comment, HttpServletRequest request, User userDetails) {
+//        第一种
+//        Comment comment2 = Immutables.createComment(comment1, it -> {
+//            it.setIp(IpAddressUtils.getIpAddress(request));
+//        });
+
+//        设置 博主评论的公共属性
+        setGeneralAdminComment(comment, userDetails);
+        comment.setIp(IpAddressUtils.getIpAddress(request));
+//        return comment2;
+
+//        第二种写法，略 TODO 按照目前的思路，这种写法同第一种可以抛弃了
+//        CommetDraft.$.produce(draft -> draft.set);
     }
 
-    private Comment setGeneralAdminComment(CommentInput comment, User userDetails) {
+    private void setGeneralAdminComment(CommentInput comment, User userDetails) {
 
-        Comment comment1 = Immutables.createComment((Comment) comment, it -> {
-            it.setIsAdminComment(true);
-            it.setCreateTime(new DateTime().toLocalDateTime());
-            it.setAvatar(userDetails.avatar());
-            it.setWebsite("/");
-            it.setNickname(userDetails.nickname());
-            it.setEmail(userDetails.email());
-            it.setIsNotice(false);
-        });
-        return comment1;
+//        Comment comment1 = Immutables.createComment((Comment) comment, it -> {
+//            it.setIsAdminComment(true);
+//            it.setCreateTime(new DateTime().toLocalDateTime());
+//            it.setAvatar(userDetails.avatar());
+//            it.setWebsite("/");
+//            it.setNickname(userDetails.nickname());
+//            it.setEmail(userDetails.email());
+//            it.setIsNotice(false);
+//        });
+        comment.setAdminComment(true);
+        comment.setCreateTime(new DateTime().toLocalDateTime());
+        comment.setAvatar(userDetails.avatar());
+        comment.setWebsite("/");
+        comment.setNickname(userDetails.nickname());
+        comment.setEmail(userDetails.email());
+        comment.setNotice(false);
+
+//        return comment1;
     }
 
+    public void setVisitorComment(CommentInput comment, HttpServletRequest request) {
+        comment.setNickname(comment.getNickname().trim());
+//        根据昵称Hash 设置头像
+        setCommentRandomAvatar(comment);
+        if(!isValidUrl(comment.getWebsite())){
+            comment.setWebsite("");
+        }
+        comment.setAdminComment(false);
+        comment.setCreateTime(new DateTime().toLocalDateTime());
+        comment.setPublished(commentDefaultOpen);
+        comment.setEmail(comment.getEmail().trim());
+        comment.setIp(IpAddressUtils.getIpAddress(request));
+//                comment.setIsAdminComment(false);
+//                .setPublished(commentDefaultOpen)
+//                .setEmail(comment.getEmail().trim())
+//                .setIp(IpAddressUtils.getIpAddress(request))
+//                .setCreateTime(new DateTime().toLocalDateTime()));
+    }
+
+    //设置 随机头像 对于昵称不是QQ号的评论，根据昵称Hash设置 头像
+    private void setCommentRandomAvatar(CommentInput comment) {
+        //设置随机头像
+        //根据评论昵称 取hash 确保每一个昵称 对应一个头像
+        long murmurHash32 = HashUtils.getMurmurHash32(comment.getNickname());
+        long num = murmurHash32 % 6 + 1;
+        String avatar = "/img/comment-avatar/" + num + ".jpg";
+        comment.setAvatar(avatar);
+    }
+
+    /**
+     * URL合法性校验
+     *
+     * @param url url
+     * @return 是否合法
+     */
+    private static boolean isValidUrl(String url) {
+        return url.matches("^https?://([^!@#$%^&*?.\\s-]([^!@#$%^&*?.\\s]{0,63}[^!@#$%^&*?.\\s])?\\.)+[a-z]{2,6}/?");
+    }
 }

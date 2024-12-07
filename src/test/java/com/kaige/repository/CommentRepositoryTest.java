@@ -53,7 +53,7 @@ class CommentRepositoryTest {
                                 .avatar()
                                 .createTime()
                                 .website()
-                                .isAdminComment()
+                                .AdminComment()
                                 .parent(CommentFetcher.$.nickname())
                                 .recursiveChildComment()
                 )).execute();

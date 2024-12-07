@@ -87,6 +87,7 @@ public class BlogController {
         String passWord =  blogService.getBlogPassword(blogPassword.getId());
 //        System.out.println(passWord);
         if (passWord.equals(blogPassword.getPassword())){
+            // 生成带blogId 的token
             String token = JwtUtils.generateToken(blogPassword.getId().toString(), 1000 * 3600 * 30L);
             return Result.ok("验证成功",token);
         }else {

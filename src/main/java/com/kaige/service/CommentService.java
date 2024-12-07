@@ -1,6 +1,7 @@
 package com.kaige.service;
 
 import com.kaige.entity.Comment;
+import com.kaige.entity.dto.CommentInput;
 import org.babyfish.jimmer.Page;
 
 import java.math.BigInteger;
@@ -12,4 +13,6 @@ public interface CommentService {
     Integer getcountByPageAndIsPublished(Integer page, BigInteger blogId, Object o);
 
     Comment getCommentById(BigInteger parentCommentId);
+
+    void saveComment(CommentInput comment);
 }

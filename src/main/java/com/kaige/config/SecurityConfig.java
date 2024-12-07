@@ -51,12 +51,35 @@ public class SecurityConfig{
         daoAuthenticationProvider.setPasswordEncoder(bCryptPasswordEncoder);
         return new ProviderManager(daoAuthenticationProvider);
     }
+//    @Bean
+//    SecurityFilterChain securityFilterChain(@NotNull HttpSecurity http) throws Exception {
+//        http
+//                // 禁用csrf防御，因为不使用session
+//                .csrf(AbstractHttpConfigurer::disable)
+//                // 不通过Session获取SecurityContext
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .authorizeHttpRequests(authorize -> authorize
+//                        // 对于登录接口 允许匿名访问
+//                        .requestMatchers("/admin/webTitleSffix").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/admin/**").hasAnyRole("admin", "visitor")
+//                        .requestMatchers("/admin/**").hasRole("admin")
+//                        // 除上面外的所有请求, 全部放行
+//                        .anyRequest().permitAll())
+//                .addFilterBefore(new JwtLoginFilter("/admin/login", loginLogService), UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class)
+//                // 配置异常处理器
+//                .exceptionHandling(a -> a.authenticationEntryPoint(new MyAuthenticationEntryPoint()));
+//        return http.build();
+//    }
+
 
     @Bean
     SecurityFilterChain securityFilterChain(@NotNull HttpSecurity http) throws Exception {
          http.
                 // 禁用 csrf防御，因为不使用session
                  csrf(AbstractHttpConfigurer::disable)
+                 // 允许跨域
+                 .cors(Customizer.withDefaults())
                  // 不通过Session获取SecurityContext
                  .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                  .authorizeHttpRequests(authorize -> authorize

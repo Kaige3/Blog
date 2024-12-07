@@ -8,9 +8,9 @@ input CommentInput {
     website
     ip
     Published as published
-    isAdminComment as adminComment
+    AdminComment as adminComment
     page
-    isNotice as notice
+    Notice as notice
     flat(parent){
     id as parentCommentId
     }

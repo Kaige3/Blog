@@ -24,11 +24,13 @@ public interface Comment {
     /**
      * 昵称
      */
+    @Key
     String nickname();
 
     /**
      * 邮箱
      */
+   @Key
     String email();
 
     /**
@@ -62,7 +64,8 @@ public interface Comment {
     /**
      * 博主回复
      */
-    Boolean isAdminComment();
+    @Column(name = "is_admin_comment")
+    boolean AdminComment();
 
     /**
      * 0普通文章 1关于我的页面 2友链页面
@@ -72,7 +75,8 @@ public interface Comment {
     /**
      * 接收邮件提醒
      */
-    Boolean isNotice();
+    @Column(name = "is_notice")
+    boolean Notice();
 
     /**
      * 所属的文章
