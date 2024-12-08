@@ -160,7 +160,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.15.0</version>  <!-- 选择与你的 Jackson 版本兼容的版本 -->
+<!--            <version>2.15.0</version>  &lt;!&ndash; 选择与你的 Jackson 版本兼容的版本 &ndash;&gt;-->
         </dependency>
 
         <!-- hutool-crypto -->

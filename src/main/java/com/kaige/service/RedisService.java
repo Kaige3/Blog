@@ -2,6 +2,7 @@ package com.kaige.service;
 
 import com.kaige.entity.Blog;
 import com.kaige.entity.SiteSetting;
+import com.kaige.entity.dto.BlogInfoView;
 import com.kaige.entity.dto.NewBlogView;
 import com.kaige.entity.vo.FriendInfoVo;
 import org.babyfish.jimmer.Page;
@@ -16,7 +17,7 @@ public interface RedisService {
 
      <T> void saveMapToValue(String redisKey, HashMap<String, T> map);
 
-    Page<Blog> getBlogInfoPageResultByPublish(String rediskey, Integer pageNum);
+    Page<BlogInfoView> getBlogInfoPageResultByPublish(String rediskey, Integer pageNum);
 
     void saveKVToHash(String rediskey, Object key , Object value);
 
@@ -29,4 +30,8 @@ public interface RedisService {
     <T>List<T> getListByValues(String newBlogListKey);
 
     <T> void saveListToValue(String newBlogListKey, List<T> newBlogViews);
+
+    boolean hasKey(String viewsKey);
+
+    void saveMapToHash(String viewsKey, Map map);
 }

@@ -2,21 +2,24 @@ package com.kaige.service.impl;
 
 import com.kaige.constant.RedisKeyConstants;
 import com.kaige.entity.*;
+import com.kaige.entity.dto.BLogViewsView;
+import com.kaige.entity.dto.BlogInfoView;
 import com.kaige.entity.dto.NewBlogView;
 import com.kaige.entity.dto.RandomBlogView;
 import com.kaige.handler.exception.NotFoundException;
 import com.kaige.repository.BlogRepository;
 import com.kaige.service.BlogService;
 import com.kaige.service.RedisService;
+import com.kaige.utils.JacksonUtils;
 import com.kaige.utils.markdown.MarkdownUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.Predicate;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,20 +36,50 @@ public class BlogServiceImpl implements BlogService {
     @Autowired
     private BlogRepository blogRepository;
 
-    private JSqlClient jSqlClient;
+    private final JSqlClient jSqlClient;
     public BlogServiceImpl(JSqlClient jSqlClient) {
         this.jSqlClient = jSqlClient;
     }
 
+    BlogTable blog = BlogTable.$;
+
     //博客简介列表排序方式
     private static final String orderBy = "is_top desc, create_time desc";
+    private static final String PRIVATE_BLOG_DESCRIPTION = "这篇文章是私密的，只有密码才能查看";
+    //每页显示5条博客简介
+    private static final int pageSize = 5;
+
+    //最新推荐博客显示3条
+    private static final int newBlogPageSize = 3;
+
+    @PostConstruct
+    private void initBlogViewsToRedis(){
+        String viewsKey = RedisKeyConstants.BLOG_VIEWS_MAP;
+        if(!redisService.hasKey(viewsKey)){
+            Map<BigInteger,Integer> blogViewsMap = getBlogViewMap();
+            redisService.saveMapToHash(viewsKey,blogViewsMap);
+            System.out.println("存入到redis成功"+blogViewsMap);
+        }
+    }
+
+    private Map<BigInteger, Integer> getBlogViewMap() {
+       List<BLogViewsView> bLogViewsViews = blogRepository.getBlogViewMap();
+        HashMap<BigInteger, Integer> map = new HashMap<>(123);
+        for (BLogViewsView bLogViewsView : bLogViewsViews) {
+            BigInteger id = bLogViewsView.getId();
+            Integer views = bLogViewsView.getViews();
+            map.put(id,views);
+        }
+        return map;
+    }
+
 
     @Override
     /**
      * 根据分类名称获取 公开 文章列表
      */
     public Page<Blog> getBlogListByCategoryName(String categoryName, Integer pageNum) {
-        BlogTable blog = BlogTable.$;
+
         return jSqlClient.createQuery(blog)
                 .where(blog.category().categoryName().eq(categoryName))
                 .orderBy(Predicate.sql("%v",it->it.value(orderBy)))
@@ -70,33 +103,53 @@ public class BlogServiceImpl implements BlogService {
                 .fetchPage(pageNum-1,10);
     }
 
+    /**
+     * 按照分页信息 查询博客简略信息
+     * @param pageNum
+     * @return
+     */
     @Override
-    public Page<Blog> getBlogListByIsPublished(Integer pageNum) {
+    public Page<BlogInfoView> getBlogListByIsPublished(Integer pageNum) {
 //        从缓存查询
         String redisKey = RedisKeyConstants.HOME_BLOG_INFO_LIST;
-        Page<Blog> pageResultFromRedis = redisService.getBlogInfoPageResultByPublish(redisKey,pageNum);
+        Page<BlogInfoView> pageResultFromRedis = redisService.getBlogInfoPageResultByPublish(redisKey,pageNum);
         if(pageResultFromRedis!=null){
+//             TODO 设置博客views  文章浏览量
+//            List<BlogInfoView> rows = pageResultFromRedis.getRows();
+            setBlogViewsFromRedisToPageResult(pageResultFromRedis);
             return pageResultFromRedis;
         }
-        BlogTable blog = BlogTable.$;
-        Page<Blog> blogPage = jSqlClient.createQuery(blog)
-                .where(blog.Published().eq(true))
-                .orderBy(Predicate.sql("%v", it -> it.value(orderBy)))
-                .select(blog.fetch(
-                        BlogFetcher.$
-                                .allScalarFields()
-                                .category(
-                                        CategoryFetcher.$
-                                                .categoryName()
-                                )
-                                .tags(TagFetcher.$
-                                        .allTableFields()
-                                )
-                        )
-                )
-                .fetchPage(pageNum - 1, 10);
+        Page<BlogInfoView> blogPage = blogRepository.getBlogListByIsPublished(pageNum,pageSize,orderBy);
+        List<BlogInfoView> blogInfoViewList = blogPage.getRows();
+        processBlogInfoViewListPassword(blogInfoViewList);
+        setBlogViewsFromRedisToPageResult(blogPage);
         redisService.saveKVToHash(redisKey,pageNum,blogPage);
         return blogPage;
+    }
+
+    private void setBlogViewsFromRedisToPageResult(Page<BlogInfoView> pageResultFromRedis) {
+        String blogViewsKey = RedisKeyConstants.BLOG_VIEWS_MAP;
+        List<BlogInfoView> blogInfoViewList = pageResultFromRedis.getRows();
+        for (int i = 0; i < blogInfoViewList.size(); i++) {
+            BlogInfoView blogInfoView = JacksonUtils.convertValue(blogInfoViewList.get(i), BlogInfoView.class);
+            BigInteger id = blogInfoView.getId();
+                int view = (int) redisService.getValueByHashKey(blogViewsKey, id);
+                blogInfoView.setViews(view);
+                blogInfoViewList.set(i,blogInfoView);
+            }
+    }
+
+    private void processBlogInfoViewListPassword(List<BlogInfoView> blogInfoViewList) {
+        for (BlogInfoView blogInfoView : blogInfoViewList) {
+            String password = blogInfoView.getPassword();
+            if(password!= null &&!password.equals("")){
+                blogInfoView.setPassword("");
+                blogInfoView.setPrivacy(true);
+            }else {
+                blogInfoView.setPrivacy(false);
+                blogInfoView.setDescription(PRIVATE_BLOG_DESCRIPTION);
+            }
+        }
     }
 
     @Override
@@ -108,6 +161,7 @@ public class BlogServiceImpl implements BlogService {
         }
 //        每篇文章的浏览量需要单独存储，使用 Hash 类型可以将所有文章的浏览量存储在一个 hash 键下，
 //        而不是每篇文章都使用一个独立的键。
+        //TODO 文章浏览量
 //       int view = (int) redisService.getValueByHashKey(RedisKeyConstants.BLOG_VIEWS_MAP,blog.id());
 //      设置文章内容转换为 h5
         //      更新redis   文章浏览量+1
@@ -119,14 +173,13 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public String getBlogPassword(BigInteger id) {
-        BlogTable blogTable = BlogTable.$;
-        Blog blog = jSqlClient.createQuery(blogTable)
-                .where(blogTable.id().eq(id))
-                .select(blogTable.fetch(
+        Blog blog2 = jSqlClient.createQuery(blog)
+                .where(blog.id().eq(id))
+                .select(blog.fetch(
                         BlogFetcher.$
                                 .password()
                 )).fetchOne();
-        return blog.password();
+        return blog2.password();
     }
 
     @Override
@@ -179,7 +232,7 @@ public class BlogServiceImpl implements BlogService {
              return newBlogViewsFromRedis;
          }
         //然后从数据库中查询
-        List<NewBlogView> newBlogViews = blogRepository.getNewBlogListByIsPublished();
+        List<NewBlogView> newBlogViews = blogRepository.getNewBlogListByIsPublished(newBlogPageSize);
         for (NewBlogView newBlogView : newBlogViews) {
             if (!"".equals(newBlogView.getPassword())){
                 newBlogView.setPassword("");
@@ -215,7 +268,6 @@ public class BlogServiceImpl implements BlogService {
     public Map<String, Object> getArchiveBlogAndCountByIsPublished() {
 //        查缓存
 //        按照文章是否公布，对年和月进行统计
-        BlogTable blog = BlogTable.$;
         List<LocalDateTime> execute = jSqlClient.createQuery(blog)
                 .where(blog.Published().eq(true))
                 .select(blog.createTime())
@@ -231,7 +283,7 @@ public class BlogServiceImpl implements BlogService {
             formattedDates.add(formattedDate);
         }
         Map<String, List<Blog>> archiveMap = new LinkedHashMap<>();
-        List<Blog> list = new ArrayList<>();
+//        List<Blog> list = new ArrayList<>();
         // 遍历格式化后的日期列表
         for (String s : formattedDates) {
             List<Blog> execute1 = jSqlClient.createQuery(blog)

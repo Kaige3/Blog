@@ -1,8 +1,11 @@
 package com.kaige.repository;
 
 import com.kaige.entity.*;
+import com.kaige.entity.dto.BLogViewsView;
+import com.kaige.entity.dto.BlogInfoView;
 import com.kaige.entity.dto.NewBlogView;
 import com.kaige.entity.dto.RandomBlogView;
+import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.spring.repository.JRepository;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.Predicate;
@@ -70,14 +73,15 @@ public interface BlogRepository extends JRepository<Blog,Long>, Tables {
    }
 
 
-    default List<NewBlogView> getNewBlogListByIsPublished() {
+    default List<NewBlogView> getNewBlogListByIsPublished(int newBlogPageSize) {
 
-        return sql().createQuery(blog)
+         return sql().createQuery(blog)
                 .where(blog.Published().eq(true))
                 .orderBy(blog.createTime().desc())
                 .select(blog.fetch(
                         NewBlogView.class
                 ))
+                .limit(newBlogPageSize)
                 .execute();
 
     }
@@ -97,5 +101,21 @@ public interface BlogRepository extends JRepository<Blog,Long>, Tables {
                 .limit(2)
                 .execute();
         return execute;
+    }
+
+    default Page<BlogInfoView> getBlogListByIsPublished(Integer pageNum,Integer pageSize,String orderBy) {
+        return sql().createQuery(blog)
+                .where(blog.Published().eq(true))
+                .orderBy(Predicate.sql("%v", it -> it.value(orderBy)))
+                .select(blog.fetch(
+                        BlogInfoView.class
+                ))
+                .fetchPage(pageNum-1, pageSize);
+    }
+
+    default List<BLogViewsView> getBlogViewMap() {
+         return sql().createQuery(blog)
+                .select(blog.fetch(BLogViewsView.class))
+                .execute();
     }
 }

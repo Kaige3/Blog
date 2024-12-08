@@ -1,6 +1,7 @@
 package com.kaige.service.impl;
 
 import com.kaige.entity.Blog;
+import com.kaige.entity.dto.BlogInfoView;
 import com.kaige.entity.dto.NewBlogView;
 import com.kaige.entity.vo.FriendInfoVo;
 import com.kaige.service.RedisService;
@@ -17,7 +18,7 @@ import java.util.Map;
 @Service
 public class RedisServiceImpl implements RedisService {
 
-    @Autowired(required = true)
+    @Autowired
     RedisTemplate redisTemplate;
     @Override
     // 从 Redis 中获取 Map 数据
@@ -32,10 +33,10 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public Page<Blog> getBlogInfoPageResultByPublish(String rediskey, Integer pageNum) {
+    public Page<BlogInfoView> getBlogInfoPageResultByPublish(String rediskey, Integer pageNum) {
          if(redisTemplate.opsForHash().hasKey(rediskey,pageNum)){
              Object object = redisTemplate.opsForHash().get(rediskey, pageNum);
-             Page<Blog> page = JacksonUtils.convertValue(object, Page.class);
+             Page<BlogInfoView> page = JacksonUtils.convertValue(object, Page.class);
              return page;
          }
         return null;
@@ -72,6 +73,16 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public <T> void saveListToValue(String newBlogListKey, List<T> newBlogViews) {
         redisTemplate.opsForValue().set(newBlogListKey,newBlogViews);
+    }
+
+    @Override
+    public boolean hasKey(String viewsKey) {
+        return redisTemplate.hasKey(viewsKey);
+    }
+
+    @Override
+    public void saveMapToHash(String viewsKey, Map map) {
+        redisTemplate.opsForHash().putAll(viewsKey,map);
     }
 
 }

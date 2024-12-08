@@ -5,6 +5,7 @@ import com.kaige.entity.Blog;
 import com.kaige.entity.Immutables;
 import com.kaige.entity.Result;
 import com.kaige.entity.User;
+import com.kaige.entity.dto.BlogInfoView;
 import com.kaige.entity.dto.BlogPassword;
 import com.kaige.handler.exception.NotFoundException;
 import com.kaige.service.BlogService;
@@ -33,7 +34,7 @@ public class BlogController {
      */
     @GetMapping("/blogs")
     public Result getBlogListByIsPublished(@RequestParam(defaultValue = "1") Integer pageNum) {
-        Page<Blog> blogPage = blogService.getBlogListByIsPublished(pageNum);
+        Page<BlogInfoView> blogPage = blogService.getBlogListByIsPublished(pageNum);
         return Result.ok("获取成功", blogPage);
     }
 

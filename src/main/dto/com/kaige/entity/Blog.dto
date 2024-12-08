@@ -2,6 +2,29 @@ input BlogPassword{
     id
     password
 }
+BlogInfoView{
+    id
+    title
+    description
+    createTime
+    views
+    words
+    readTime
+    Top as top
+    password
+    privacy: Boolean
+    category{
+        categoryName as name
+    }
+    tags{
+        tagName as name
+        color
+    }
+}
+BLogViewsView{
+    id
+    views
+}
 NewBlogView{
     id
     title

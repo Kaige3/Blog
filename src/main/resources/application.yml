@@ -12,11 +12,15 @@ spring:
     username: root
     url: jdbc:mysql://114.132.123.49:3306/Kaige_blog?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.cj.jdbc.Driver
-  devtools:
-    restart:
-      enabled: true
-      additional-paths: src/main/java
-      additional-exclude: static/**
+#  devtools:
+#    restart:
+#      enabled: true
+#      additional-paths: src/main/java
+#      additional-exclude: static/**
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
   # Redis
   data:
     redis:
@@ -42,5 +46,6 @@ comment:
   notify:
     channel: mail
   default-open: true
+
 
 

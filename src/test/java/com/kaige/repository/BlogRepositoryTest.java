@@ -3,6 +3,7 @@ package com.kaige.repository;
 import com.kaige.entity.Blog;
 import com.kaige.entity.BlogFetcher;
 import com.kaige.entity.BlogTable;
+import com.kaige.entity.dto.BLogViewsView;
 import com.kaige.entity.dto.NewBlogView;
 import com.kaige.entity.dto.RandomBlogView;
 import org.babyfish.jimmer.sql.ast.Predicate;
@@ -14,9 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class BlogRepositoryTest {
@@ -63,6 +62,14 @@ class BlogRepositoryTest {
                 .orderBy(Predicate.sql("RAND()"))
                 .select(blogTable.fetch(RandomBlogView.class))
                 .limit(2)
+                .execute();
+        System.out.println(execute);
+    }
+
+    @Test
+    void getBlogViewMap() {
+        List<BLogViewsView> execute = blogRepository.sql().createQuery(blogTable)
+                .select(blogTable.fetch(BLogViewsView.class))
                 .execute();
         System.out.println(execute);
     }

@@ -3,14 +3,26 @@ package com.kaige.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.apache.catalina.mapper.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Component
 public class JacksonUtils {
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
-
-//    将java对象转换为json字符串
+    private static ObjectMapper objectMapper;
+    @Autowired
+    public JacksonUtils(ApplicationContext applicationContext) {
+        objectMapper = applicationContext.getBean(ObjectMapper.class);
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
+    //    将java对象转换为json字符串
     public static String writeValueAsString(Object value) {
         try {
             return objectMapper.writeValueAsString(value);
@@ -42,4 +54,7 @@ public class JacksonUtils {
         return objectMapper.convertValue(fromValue, toValueType);
     }
 
+    public static void setObjectMapper(ObjectMapper objectMapper) {
+        JacksonUtils.objectMapper = objectMapper;
+    }
 }

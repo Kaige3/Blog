@@ -1,6 +1,7 @@
 package com.kaige.service;
 
 import com.kaige.entity.Blog;
+import com.kaige.entity.dto.BlogInfoView;
 import com.kaige.entity.dto.NewBlogView;
 import com.kaige.entity.dto.RandomBlogView;
 import org.babyfish.jimmer.Page;
@@ -14,7 +15,7 @@ public interface BlogService {
 
     Page<Blog> getBlogListByCategoryName(String categoryName, Integer pageNum);
 
-    Page<Blog> getBlogListByIsPublished(Integer pageNum);
+    Page<BlogInfoView> getBlogListByIsPublished(Integer pageNum);
 
     Blog getBlogByIdAndIsPublished(Long id);
 
