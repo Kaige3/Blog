@@ -1,5 +1,6 @@
 package com.kaige.service.impl;
 
+import com.kaige.constant.RedisKeyConstants;
 import com.kaige.constant.SiteSettingConstants;
 import com.kaige.entity.SiteSetting;
 import com.kaige.entity.vo.Badge;
@@ -7,6 +8,7 @@ import com.kaige.entity.vo.Copyright;
 import com.kaige.entity.vo.Favorite;
 import com.kaige.entity.vo.Introduction;
 import com.kaige.repository.SiteSettingRepository;
+import com.kaige.service.RedisService;
 import com.kaige.service.SiteSettingService;
 import com.kaige.utils.JacksonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +26,19 @@ public class SiteSettingServiceImpl implements SiteSettingService {
 
     @Autowired
     private SiteSettingRepository siteSettingRepository;
+    @Autowired
+    private RedisService redisService;
 
     //它会匹配被双引号包围的任意字符
     private static final Pattern PATTERN = Pattern.compile("\"(.*?)\"");
     @Override
     public Map<String, Object> getSiteInfo() {
         // 先从redis中查询
-//        TODO 先从redis中查询
+        String siteInfoMapKey = RedisKeyConstants.SITE_INFO_MAP;
+        Map<String, Object> siteInfoMapFromRedis = redisService.getMapByValue(siteInfoMapKey);
+        if (siteInfoMapFromRedis!= null){
+            return siteInfoMapFromRedis;
+        }
         // 否则从数据库中查询
         // 1.全表查询 siteSetting
         List<SiteSetting> siteSettingList = siteSettingRepository.getList();
@@ -89,6 +97,7 @@ public class SiteSettingServiceImpl implements SiteSettingService {
         map.put("introduction",introduction);
         map.put("siteInfo",siteInfo);
         map.put("badges",badges);
+        redisService.saveMapToValue(siteInfoMapKey,map);
         return map;
     }
 }

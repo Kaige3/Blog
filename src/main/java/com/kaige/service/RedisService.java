@@ -2,11 +2,13 @@ package com.kaige.service;
 
 import com.kaige.entity.Blog;
 import com.kaige.entity.SiteSetting;
+import com.kaige.entity.dto.NewBlogView;
 import com.kaige.entity.vo.FriendInfoVo;
 import org.babyfish.jimmer.Page;
 
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public interface RedisService {
@@ -23,4 +25,8 @@ public interface RedisService {
     void saveObjectToValue(String redisKey, FriendInfoVo friendInfoVo1);
 
     Object getValueByHashKey(String hash, Object key);
+
+    <T>List<T> getListByValues(String newBlogListKey);
+
+    <T> void saveListToValue(String newBlogListKey, List<T> newBlogViews);
 }

@@ -1,6 +1,7 @@
 package com.kaige.service.impl;
 
 import com.kaige.entity.Blog;
+import com.kaige.entity.dto.NewBlogView;
 import com.kaige.entity.vo.FriendInfoVo;
 import com.kaige.service.RedisService;
 import com.kaige.utils.JacksonUtils;
@@ -10,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -60,4 +62,16 @@ public class RedisServiceImpl implements RedisService {
     public Object getValueByHashKey(String hash, Object key) {
         return redisTemplate.opsForHash().get(hash,key);
     }
+
+    @Override
+    public <T>List<T> getListByValues(String newBlogListKey) {
+        List<T>  redisResult = (List<T>) redisTemplate.opsForValue().get(newBlogListKey);
+        return redisResult;
+    }
+
+    @Override
+    public <T> void saveListToValue(String newBlogListKey, List<T> newBlogViews) {
+        redisTemplate.opsForValue().set(newBlogListKey,newBlogViews);
+    }
+
 }

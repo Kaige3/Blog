@@ -173,6 +173,11 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public List<NewBlogView> getNewBlogListByIsPublished() {
         //TODO 先从redis查询，然后存入redis
+        String newBlogListKey = RedisKeyConstants.NEW_BLOG_LIST;
+         List<NewBlogView> newBlogViewsFromRedis = redisService.getListByValues(newBlogListKey);
+         if (newBlogViewsFromRedis!=null){
+             return newBlogViewsFromRedis;
+         }
         //然后从数据库中查询
         List<NewBlogView> newBlogViews = blogRepository.getNewBlogListByIsPublished();
         for (NewBlogView newBlogView : newBlogViews) {
@@ -183,6 +188,7 @@ public class BlogServiceImpl implements BlogService {
                 newBlogView.setPrivacy(false);
             }
         }
+        redisService.saveListToValue(newBlogListKey,newBlogViews);
         return newBlogViews;
     }
 
