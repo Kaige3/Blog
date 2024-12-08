@@ -1,6 +1,8 @@
 package com.kaige.service;
 
 import com.kaige.entity.Blog;
+import com.kaige.entity.dto.NewBlogView;
+import com.kaige.entity.dto.RandomBlogView;
 import org.babyfish.jimmer.Page;
 
 import java.math.BigInteger;
@@ -23,4 +25,8 @@ public interface BlogService {
     Boolean getCommentEnabledByBlogId(BigInteger blogId);
 
     Boolean getPublishedByBlogId(BigInteger blogId);
+
+    List<NewBlogView> getNewBlogListByIsPublished();
+
+    List<RandomBlogView> getRandomBlogList();
 }

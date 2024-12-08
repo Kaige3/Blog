@@ -52,7 +52,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment getCommentById(BigInteger parentCommentId) {
+    public Comment getCommentById(Integer parentCommentId) {
         return commentRepository.getCommentById(parentCommentId);
     }
 

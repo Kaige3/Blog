@@ -12,7 +12,7 @@ public interface CommentService {
 
     Integer getcountByPageAndIsPublished(Integer page, BigInteger blogId, Object o);
 
-    Comment getCommentById(BigInteger parentCommentId);
+    Comment getCommentById(Integer parentCommentId);
 
     void saveComment(CommentInput comment);
 }

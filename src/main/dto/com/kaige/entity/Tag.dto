@@ -1,0 +1,4 @@
+TagView{
+    tagName as name
+    color
+}

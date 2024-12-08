@@ -57,7 +57,7 @@ public interface CommentRepository extends JRepository<Comment,Integer>, Tables 
 
     }
 
-    default Comment getCommentById(BigInteger parentCommentId) {
+    default Comment getCommentById(Integer parentCommentId) {
         return sql().createQuery(commentTable)
                 .where(commentTable.id().eq(parentCommentId))
                 .select(commentTable.fetch(

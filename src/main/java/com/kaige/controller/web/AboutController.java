@@ -23,8 +23,10 @@ public class AboutController {
     public AboutController(JSqlClient sqlClient) {
         this.sqlClient = sqlClient;
     }
+
     @Autowired
     private RedisService redisService;
+
     /**
      * @Description: 获取关于我的信息
      * @Author: Kaige

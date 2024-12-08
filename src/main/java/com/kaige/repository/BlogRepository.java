@@ -1,8 +1,12 @@
 package com.kaige.repository;
 
 import com.kaige.entity.*;
+import com.kaige.entity.dto.NewBlogView;
+import com.kaige.entity.dto.RandomBlogView;
 import org.babyfish.jimmer.spring.repository.JRepository;
 import org.babyfish.jimmer.sql.JSqlClient;
+import org.babyfish.jimmer.sql.ast.Predicate;
+import org.babyfish.jimmer.sql.ast.query.ConfigurableRootQuery;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
@@ -64,4 +68,34 @@ public interface BlogRepository extends JRepository<Blog,Long>, Tables {
        assert blog1 != null;
        return blog1.Published();
    }
+
+
+    default List<NewBlogView> getNewBlogListByIsPublished() {
+
+        return sql().createQuery(blog)
+                .where(blog.Published().eq(true))
+                .orderBy(blog.createTime().desc())
+                .select(blog.fetch(
+                        NewBlogView.class
+                ))
+                .execute();
+
+    }
+
+    default List<RandomBlogView> getRandomBlogList() {
+//        return sql().createQuery(blog)
+//                .where(blog.Published().eq(true))
+//                .where(blog.Recommend().eq(true))
+//                .orderBy(Predicate.sql("%v", it -> it.value("rand()")))
+//                .select(blog.fetch(RandomBlogView.class))
+//                .execute();
+        List<RandomBlogView> execute = sql().createQuery(blog)
+                .where(blog.Published().eq(true))
+                .where(blog.Recommend().eq(true))
+                .orderBy(Predicate.sql("RAND()"))
+                .select(blog.fetch(RandomBlogView.class))
+                .limit(2)
+                .execute();
+        return execute;
+    }
 }

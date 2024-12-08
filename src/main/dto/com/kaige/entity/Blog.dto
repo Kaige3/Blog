@@ -2,3 +2,17 @@ input BlogPassword{
     id
     password
 }
+NewBlogView{
+    id
+    title
+    password
+    privacy: Boolean
+}
+RandomBlogView{
+    id
+    title
+    firstPicture
+    createTime
+    password
+    privacy: Boolean
+}

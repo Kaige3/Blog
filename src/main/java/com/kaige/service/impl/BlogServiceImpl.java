@@ -2,6 +2,8 @@ package com.kaige.service.impl;
 
 import com.kaige.constant.RedisKeyConstants;
 import com.kaige.entity.*;
+import com.kaige.entity.dto.NewBlogView;
+import com.kaige.entity.dto.RandomBlogView;
 import com.kaige.handler.exception.NotFoundException;
 import com.kaige.repository.BlogRepository;
 import com.kaige.service.BlogService;
@@ -166,6 +168,36 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Boolean getPublishedByBlogId(BigInteger blogId) {
         return blogRepository.getPublisheByBlogId(blogId);
+    }
+
+    @Override
+    public List<NewBlogView> getNewBlogListByIsPublished() {
+        //TODO 先从redis查询，然后存入redis
+        //然后从数据库中查询
+        List<NewBlogView> newBlogViews = blogRepository.getNewBlogListByIsPublished();
+        for (NewBlogView newBlogView : newBlogViews) {
+            if (!"".equals(newBlogView.getPassword())){
+                newBlogView.setPassword("");
+                newBlogView.setPrivacy(true);
+            }else {
+                newBlogView.setPrivacy(false);
+            }
+        }
+        return newBlogViews;
+    }
+
+    @Override
+    public List<RandomBlogView> getRandomBlogList() {
+        List<RandomBlogView> randomBlogList = blogRepository.getRandomBlogList();
+        for (RandomBlogView randomBlogView : randomBlogList) {
+            if (!"".equals(randomBlogView.getPassword())){
+                randomBlogView.setPassword("");
+                randomBlogView.setPrivacy(true);
+            }else {
+                randomBlogView.setPrivacy(false);
+            }
+        }
+        return randomBlogList;
     }
 
     /**

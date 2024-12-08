@@ -48,7 +48,7 @@ public class CommentController {
     @GetMapping("/comments")
     public Result comments(@RequestParam Integer page,
                            @RequestParam(defaultValue = "") BigInteger blogId,
-                           @RequestParam(defaultValue = "1") Integer pageNum,
+//                           @RequestParam(defaultValue = "1") Integer pageNum,
                            @RequestParam(defaultValue = "10")Integer pageSize,
                            @RequestHeader(value = "Authorization",defaultValue = "") String jwt){
         CommentOpenStateEnum commentOpenStateEnum = commentUtils.judgeCommentState(page, blogId);

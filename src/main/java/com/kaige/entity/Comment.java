@@ -19,7 +19,7 @@ public interface Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY
     )
-    BigInteger id();
+    int id();
 
     /**
      * 昵称

@@ -1,0 +1,4 @@
+CategoryView{
+    id
+    categoryName as name
+}
