@@ -17,30 +17,6 @@ public class CategoryController {
     @Autowired
     private BlogService blogService;
 
-    private JSqlClient jSqlClient;
-    public CategoryController(JSqlClient jSqlClient) {
-        this.jSqlClient = jSqlClient;
-    }
-
-    CategoryTable category = CategoryTable.$;
-
-    /**
-     * 测试数据模型 一对多 和 多对一 搭建正确
-     * @return
-     */
-    @GetMapping("/categories")
-    public Result test(){
-        List<Category> execute = jSqlClient.createQuery(category)
-                .select(category.fetch(
-                        CategoryFetcher.$
-                                .categoryName()
-                                .blogs(BlogFetcher.$
-                                        .allScalarFields())
-                ))
-                .execute();
-        return Result.ok("获取成功",execute);
-    }
-
     /**
      * 根据分类名称获取 公开 文章列表
      */

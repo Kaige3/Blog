@@ -31,6 +31,7 @@ public class LoginController {
         if (!"ROLE_ADMIN".equals(user.role())){
             return Result.create(403,"无权限");
         }
+        // 这里其实可以用一个 Dto来 封装 就可以用 set/get 方法
         User user1 = Immutables.createUser(user, draft -> {
             draft.setPassword("");
         });

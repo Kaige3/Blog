@@ -34,7 +34,7 @@ public class FriendServiceImpl implements FriendService {
     }
 
     @Override
-    public FriendInfoVo getSiteFriendinfo() {
+    public FriendInfoVo getSiteFriendInfo() {
         SiteSettingTable siteSettingTable = SiteSettingTable.$;
 //        从redis中获取
         String redisKey = RedisKeyConstants.FRIEND_INFO_MAP;

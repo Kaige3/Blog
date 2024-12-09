@@ -9,7 +9,7 @@ import java.util.List;
 public interface FriendService {
     List<Friend> getFriendList();
 
-    FriendInfoVo getSiteFriendinfo();
+    FriendInfoVo getSiteFriendInfo();
 
     void addViewsByNickname(String nickname);
 }

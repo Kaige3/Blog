@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 public interface TagService {
-     Page<Blog> getBlogInfoListByTagNameAndIsPublished(String tagName, Integer pageNum);
+    Page<Blog> getBlogInfoListByTagNameAndIsPublished(String tagName, Integer pageNum);
 
     List<TagView> getTagList();
 }

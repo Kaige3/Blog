@@ -31,7 +31,7 @@ public class FriendController {
     public Result friend() {
         List<Friend> friendList = friendService.getFriendList();
 //        TODO 思考实现方式 为什么需要两个参数  ,
-        FriendInfoVo setting = friendService.getSiteFriendinfo();
+        FriendInfoVo setting = friendService.getSiteFriendInfo();
 
         Map<String, Object> map = new HashMap<>();
         map.put("friendList", friendList);
