@@ -2,6 +2,14 @@ input BlogPassword{
     id
     password
 }
+// 文章归档
+BlogArchiveView{
+    id
+    title
+    createTime as day
+    password
+    privacy: Boolean
+}
 // 根据id查询博客详情
 BlogDetailView{
     id

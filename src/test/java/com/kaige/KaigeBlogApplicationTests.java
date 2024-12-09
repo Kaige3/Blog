@@ -1,21 +1,15 @@
 package com.kaige;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.date.DateTime;
-import com.kaige.entity.*;
+import com.kaige.entity.BlogTable;
+import com.kaige.entity.Comment;
+import com.kaige.entity.CommentTable;
 import com.kaige.entity.dto.CommentInput;
 import org.babyfish.jimmer.sql.JSqlClient;
-import org.babyfish.jimmer.sql.ast.mutation.SimpleSaveResult;
-import org.babyfish.jimmer.sql.ast.table.Table;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.Date;
-import java.util.List;
 
 @SpringBootTest
 class KaigeBlogApplicationTests {
@@ -28,18 +22,10 @@ class KaigeBlogApplicationTests {
     }
 
     CommentTable commentTable = CommentTable.$;
-
+    BlogTable blogTable = BlogTable.$;
     @Test
-//    @Transactional
     void contextLoads() {
-//        Comment comment = jSqlClient.createQuery(commentTable)
-//                .where(commentTable.Published().eq(true))
-//                .where(commentTable.id().eq(BigInteger.valueOf(1)))
-//                .where(commentTable.parentId().isNull())
-//                .select(commentTable.fetch(
-//                        CommentFetcher.$
-//                                .nickname()
-//                )).fetchOneOrNull();
+
         CommentInput commentInput = new CommentInput();
         commentInput.setNickname("kaige");
         commentInput.setAdminComment(false);
@@ -60,6 +46,5 @@ class KaigeBlogApplicationTests {
     void test() {
         jSqlClient.deleteById(Comment.class,BigInteger.valueOf(9));
     }
-
 
 }

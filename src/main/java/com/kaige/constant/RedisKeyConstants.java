@@ -13,4 +13,5 @@ public class RedisKeyConstants {
     public static final String NEW_BLOG_LIST = "newBlogList";
     public static final String CATEGORY_NAME_LIST = "categoryNameList";
     public static final String TAG_COLOR_List = "tagColorList";
+    public static final String ARCHIVE_BLOG_MAP = "archiveBlogMap";
 }
