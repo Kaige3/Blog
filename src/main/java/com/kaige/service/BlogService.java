@@ -31,4 +31,6 @@ public interface BlogService {
     List<NewBlogView> getNewBlogListByIsPublished();
 
     List<RandomBlogView> getRandomBlogList();
+
+    void updateViewsToRedis(BigInteger id);
 }

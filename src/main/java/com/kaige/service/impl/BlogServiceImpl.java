@@ -162,6 +162,7 @@ public class BlogServiceImpl implements BlogService {
         //      更新redis   文章浏览量+1
         blog.setContent(MarkdownUtils.markdownToHtmlExtensions(blog.getContent()));
         blog.setViews(view);
+        System.out.println(view);
         return blog;
     }
 
@@ -250,6 +251,11 @@ public class BlogServiceImpl implements BlogService {
             }
         }
         return randomBlogList;
+    }
+
+    @Override
+    public void updateViewsToRedis(BigInteger id) {
+        redisService.incrementByHashKey(RedisKeyConstants.BLOG_VIEWS_MAP,id,1);
     }
 
     /**

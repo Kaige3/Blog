@@ -34,4 +34,6 @@ public interface RedisService {
     boolean hasKey(String viewsKey);
 
     void saveMapToHash(String viewsKey, Map map);
+
+    void incrementByHashKey(String blogViewsMap, Object key, int increment);
 }

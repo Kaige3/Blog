@@ -78,15 +78,14 @@ public class BlogController {
             }else {
                 return Result.create(403,"此文章受密码保护，请验证密码");
             }
+            blogDetail.setPassword("");
         }
-        blogDetail.setPassword("");
-
+        blogService.updateViewsToRedis(blogDetail.getId());
         return Result.ok("获取成功",blogDetail);
     }
     @PostMapping("/checkBlogPassword")
     public Result checkBlogPassword(@RequestBody BlogPassword blogPassword){
         String passWord =  blogService.getBlogPassword(blogPassword.getId());
-//        System.out.println(passWord);
         if (passWord.equals(blogPassword.getPassword())){
             // 生成带blogId 的token
             String token = JwtUtils.generateToken(blogPassword.getId().toString(), 1000 * 3600 * 30L);

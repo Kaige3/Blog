@@ -85,4 +85,12 @@ public class RedisServiceImpl implements RedisService {
         redisTemplate.opsForHash().putAll(viewsKey,map);
     }
 
+    @Override
+    public void incrementByHashKey(String blogViewsMap, Object key, int increment) {
+        if (increment<0){
+            throw new RuntimeException("increment不能小于0");
+        }
+        redisTemplate.opsForHash().increment(blogViewsMap,key,increment);
+    }
+
 }
