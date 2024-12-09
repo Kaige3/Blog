@@ -103,7 +103,7 @@ public class CommentUtils {
         comment.setIp(IpAddressUtils.getIpAddress(request));
 //        return comment2;
 
-//        第二种写法，略 TODO 按照目前的思路，这种写法同第一种可以抛弃了
+//        第二种写法，略
 //        CommetDraft.$.produce(draft -> draft.set);
     }
 

@@ -2,6 +2,28 @@ input BlogPassword{
     id
     password
 }
+// 根据id查询博客详情
+BlogDetailView{
+    id
+    title
+    Appreciation as appreciation
+    content
+    Top as top
+    createTime
+    updateTime
+    views
+    words
+    readTime
+    password
+    category{
+        categoryName as name
+    }
+    tags{
+        tagName as name
+        color
+    }
+}
+// 根据标签name分页查询公开博客列表
 BlogInfoView{
     id
     title

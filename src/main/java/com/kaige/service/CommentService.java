@@ -8,7 +8,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 public interface CommentService {
-    List<Comment> getPageCommentList(Integer page, BigInteger blogId);
+    Page<Comment> getPageCommentList(Integer pageNum,Integer page, BigInteger blogId,Integer pageSize);
 
     Integer getcountByPageAndIsPublished(Integer page, BigInteger blogId, Object o);
 

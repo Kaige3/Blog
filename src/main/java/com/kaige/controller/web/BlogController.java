@@ -5,6 +5,7 @@ import com.kaige.entity.Blog;
 import com.kaige.entity.Immutables;
 import com.kaige.entity.Result;
 import com.kaige.entity.User;
+import com.kaige.entity.dto.BlogDetailView;
 import com.kaige.entity.dto.BlogInfoView;
 import com.kaige.entity.dto.BlogPassword;
 import com.kaige.handler.exception.NotFoundException;
@@ -47,9 +48,9 @@ public class BlogController {
     @GetMapping("/blog")
     public Result getBlog(@RequestParam Long id,
                           @RequestHeader(value = "Authorization", defaultValue = "") String jwt){
-        Blog blogDetail = blogService.getBlogByIdAndIsPublished(id);
+        BlogDetailView blogDetail = blogService.getBlogByIdAndIsPublished(id);
 //        判断是否有密码
-        if(!"".equals(blogDetail.password())){
+        if(!"".equals(blogDetail.getPassword())){
 //            判断token是否存在
             if(JwtUtils.judgeTokenIsExist(jwt)){
 //                判断token是否正确
@@ -78,10 +79,9 @@ public class BlogController {
                 return Result.create(403,"此文章受密码保护，请验证密码");
             }
         }
-        Blog blog = Immutables.createBlog(blogDetail, it -> {
-            it.setPassword("");
-        });
-        return Result.ok("获取成功",blog);
+        blogDetail.setPassword("");
+
+        return Result.ok("获取成功",blogDetail);
     }
     @PostMapping("/checkBlogPassword")
     public Result checkBlogPassword(@RequestBody BlogPassword blogPassword){

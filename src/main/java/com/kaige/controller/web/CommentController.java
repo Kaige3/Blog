@@ -44,11 +44,10 @@ public class CommentController {
      * @param jwt token
      * @return
      */
-//    TODO  应该是有一个bug , pageNum 没有用到
     @GetMapping("/comments")
     public Result comments(@RequestParam Integer page,
                            @RequestParam(defaultValue = "") BigInteger blogId,
-//                           @RequestParam(defaultValue = "1") Integer pageNum,
+                           @RequestParam(defaultValue = "1") Integer pageNum,
                            @RequestParam(defaultValue = "10")Integer pageSize,
                            @RequestHeader(value = "Authorization",defaultValue = "") String jwt){
         CommentOpenStateEnum commentOpenStateEnum = commentUtils.judgeCommentState(page, blogId);
@@ -65,21 +64,13 @@ public class CommentController {
         Integer allComment = commentService.getcountByPageAndIsPublished(page,blogId,null);
 //         改页面公开评论的 数量
         Integer i = commentService.getcountByPageAndIsPublished(page, blogId, true);
-//        改页面所有公布评论的 数量
-        List<Comment> commentPage = commentService.getPageCommentList(page,blogId);
-//      计算总页数
-        int totalItems = commentPage.size(); // 总数据条数
-        int totalPages = totalItems / pageSize; // 初步计算总页数
-//      如果有剩余的数据（总数据不能被 pageSize 整除），则加一页
-        if (totalItems % pageSize != 0) {
-            totalPages ++;
-        }
-//        分页好的数据
-        Page<Comment> commentPage2 = new Page<>(commentPage, commentPage.size(),totalPages);
+//        该页面所有公布评论的 数量
+        Page<Comment> commentPage = commentService.getPageCommentList(pageNum,page,blogId,pageSize);
+
         HashMap<String, Object> map = new HashMap<>(8);
         map.put("allComment",allComment);
         map.put("closeComment",allComment - i);
-        map.put("comments",commentPage2);
+        map.put("comments",commentPage);
         return Result.ok("获取成功",map);
     }
 

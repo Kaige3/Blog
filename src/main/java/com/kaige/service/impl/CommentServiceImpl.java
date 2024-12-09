@@ -23,8 +23,10 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private CommentRepository commentRepository;
     @Override
-    public List<Comment> getPageCommentList(Integer page, BigInteger blogId) {
-        List<Comment> commentList = commentRepository.getPageCommentList(page, blogId);
+    public Page<Comment> getPageCommentList(Integer pageNum,Integer page, BigInteger blogId,Integer pageSize) {
+        // 优化版 Optimized version
+        Page<Comment> commentPage = commentRepository.getPageCommentListOV(pageNum,page, blogId,pageSize);
+        List<Comment> commentList = commentPage.getRows();
 
         for (Comment comment : commentList) {
             // 获取所有的子评论
@@ -40,10 +42,8 @@ public class CommentServiceImpl implements CommentService {
             // 替换原评论列表中的评论
             commentList.set(commentList.indexOf(comment), comment1);
         }
-        // 如果你需要排序父评论的 createTime
-//        commentList.sort(Comparator.comparing(Comment::createTime));
 
-        return commentList;
+        return commentPage;
     }
 
     @Override

@@ -21,7 +21,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryView> getCategoryNameList() {
-        //TODO 先从redis中查询数据，如果有，直接返回
         String categoryNameListKey = RedisKeyConstants.CATEGORY_NAME_LIST;
         List<CategoryView> categoryViewsFromRedis = redisService.getListByValues(categoryNameListKey);
         if(categoryViewsFromRedis!= null){

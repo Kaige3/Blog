@@ -1,10 +1,7 @@
 package com.kaige.repository;
 
 import com.kaige.entity.*;
-import com.kaige.entity.dto.BLogViewsView;
-import com.kaige.entity.dto.BlogInfoView;
-import com.kaige.entity.dto.NewBlogView;
-import com.kaige.entity.dto.RandomBlogView;
+import com.kaige.entity.dto.*;
 import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.spring.repository.JRepository;
 import org.babyfish.jimmer.sql.JSqlClient;
@@ -19,21 +16,14 @@ import java.util.List;
 public interface BlogRepository extends JRepository<Blog,Long>, Tables {
 
     BlogTable blog = BlogTable.$;
-    default Blog getBlogByIdAndIsPublished(Long id){
+    default BlogDetailView getBlogByIdAndIsPublished(Long id){
         return sql()
-               .createQuery(blog)
-               .where(blog.id().eq(BigInteger.valueOf(id)))
-               .where(blog.Published().eq(true))
+                .createQuery(blog)
+                .where(blog.id().eq(BigInteger.valueOf(id)))
+                .where(blog.Published().eq(true))
                 .select(blog.fetch(
-                       BlogFetcher.$
-                               .allScalarFields()
-                               .category(
-                                       CategoryFetcher.$
-                                               .categoryName()
-                               )
-                               .tags(TagFetcher.$
-                                       .allTableFields()
-                               )))
+                        BlogDetailView.class
+                ))
                 .fetchOneOrNull();
     }
 

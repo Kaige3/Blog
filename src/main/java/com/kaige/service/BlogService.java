@@ -1,6 +1,7 @@
 package com.kaige.service;
 
 import com.kaige.entity.Blog;
+import com.kaige.entity.dto.BlogDetailView;
 import com.kaige.entity.dto.BlogInfoView;
 import com.kaige.entity.dto.NewBlogView;
 import com.kaige.entity.dto.RandomBlogView;
@@ -17,7 +18,7 @@ public interface BlogService {
 
     Page<BlogInfoView> getBlogListByIsPublished(Integer pageNum);
 
-    Blog getBlogByIdAndIsPublished(Long id);
+    BlogDetailView getBlogByIdAndIsPublished(Long id);
 
     String getBlogPassword(BigInteger id);
 

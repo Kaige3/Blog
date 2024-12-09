@@ -51,7 +51,6 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagView> getTagList() {
-        //TODO 先从redis中查询数据，如果有，直接返回
         String tagColorListKey = RedisKeyConstants.TAG_COLOR_List;
         List<TagView> listByValues = redisService.getListByValues(tagColorListKey);
         if (listByValues!= null) {

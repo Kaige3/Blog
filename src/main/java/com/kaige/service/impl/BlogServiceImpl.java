@@ -2,10 +2,7 @@ package com.kaige.service.impl;
 
 import com.kaige.constant.RedisKeyConstants;
 import com.kaige.entity.*;
-import com.kaige.entity.dto.BLogViewsView;
-import com.kaige.entity.dto.BlogInfoView;
-import com.kaige.entity.dto.NewBlogView;
-import com.kaige.entity.dto.RandomBlogView;
+import com.kaige.entity.dto.*;
 import com.kaige.handler.exception.NotFoundException;
 import com.kaige.repository.BlogRepository;
 import com.kaige.service.BlogService;
@@ -114,8 +111,6 @@ public class BlogServiceImpl implements BlogService {
         String redisKey = RedisKeyConstants.HOME_BLOG_INFO_LIST;
         Page<BlogInfoView> pageResultFromRedis = redisService.getBlogInfoPageResultByPublish(redisKey,pageNum);
         if(pageResultFromRedis!=null){
-//             TODO 设置博客views  文章浏览量
-//            List<BlogInfoView> rows = pageResultFromRedis.getRows();
             setBlogViewsFromRedisToPageResult(pageResultFromRedis);
             return pageResultFromRedis;
         }
@@ -131,6 +126,8 @@ public class BlogServiceImpl implements BlogService {
         String blogViewsKey = RedisKeyConstants.BLOG_VIEWS_MAP;
         List<BlogInfoView> blogInfoViewList = pageResultFromRedis.getRows();
         for (int i = 0; i < blogInfoViewList.size(); i++) {
+            // 如果是从 从redis 中获取到 HOME_BLOG_INFO_LIST
+            // 将json格式转换为 BlogInfoView 对象
             BlogInfoView blogInfoView = JacksonUtils.convertValue(blogInfoViewList.get(i), BlogInfoView.class);
             BigInteger id = blogInfoView.getId();
                 int view = (int) redisService.getValueByHashKey(blogViewsKey, id);
@@ -153,22 +150,19 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Blog getBlogByIdAndIsPublished(Long id) {
+    public BlogDetailView getBlogByIdAndIsPublished(Long id) {
 //        按id查找公布的文章
-        Blog blog = blogRepository.getBlogByIdAndIsPublished(id);
+        BlogDetailView blog = blogRepository.getBlogByIdAndIsPublished(id);
         if(blog == null){
             throw new NotFoundException("文章不存在");
         }
 //        每篇文章的浏览量需要单独存储，使用 Hash 类型可以将所有文章的浏览量存储在一个 hash 键下，
 //        而不是每篇文章都使用一个独立的键。
-        //TODO 文章浏览量
-//       int view = (int) redisService.getValueByHashKey(RedisKeyConstants.BLOG_VIEWS_MAP,blog.id());
-//      设置文章内容转换为 h5
+       int view = (int) redisService.getValueByHashKey(RedisKeyConstants.BLOG_VIEWS_MAP,blog.getId());
         //      更新redis   文章浏览量+1
-        return Immutables.createBlog(blog, it -> {
-            it.setContent(MarkdownUtils.markdownToHtmlExtensions(blog.content()));
-//            it.setViews(view);
-        });
+        blog.setContent(MarkdownUtils.markdownToHtmlExtensions(blog.getContent()));
+        blog.setViews(view);
+        return blog;
     }
 
     @Override
@@ -225,7 +219,6 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public List<NewBlogView> getNewBlogListByIsPublished() {
-        //TODO 先从redis查询，然后存入redis
         String newBlogListKey = RedisKeyConstants.NEW_BLOG_LIST;
          List<NewBlogView> newBlogViewsFromRedis = redisService.getListByValues(newBlogListKey);
          if (newBlogViewsFromRedis!=null){
