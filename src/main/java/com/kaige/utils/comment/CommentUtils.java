@@ -80,7 +80,7 @@ public class CommentUtils {
                  }
                  break;
              case PageConstants.FRIEND:
-                 FriendInfoVo siteFriendInfo = friendService.getSiteFriendinfo();
+                 FriendInfoVo siteFriendInfo = friendService.getSiteFriendInfo();
                  if (!siteFriendInfo.getCommentEnabled()){
 //                     评论页面已关闭
                      return CommentOpenStateEnum.CLOSE;
