@@ -47,8 +47,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Integer getcountByPageAndIsPublished(Integer page, BigInteger blogId, Object o) {
-        return commentRepository.getcountByPageAndIsPublished(page, blogId, o);
+    public Integer getcountByPageAndIsPublished(Integer page, BigInteger blogId, Boolean isPublished) {
+        return commentRepository.getcountByPageAndIsPublished(page, blogId, isPublished);
     }
 
     @Override

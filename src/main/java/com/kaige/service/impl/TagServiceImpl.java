@@ -2,6 +2,8 @@ package com.kaige.service.impl;
 
 import com.kaige.constant.RedisKeyConstants;
 import com.kaige.entity.*;
+import com.kaige.entity.dto.BlogDetailView;
+import com.kaige.entity.dto.BlogInfoView;
 import com.kaige.entity.dto.TagView;
 import com.kaige.service.RedisService;
 import com.kaige.service.TagService;
@@ -30,27 +32,18 @@ public class TagServiceImpl implements TagService {
     TagTable tagTable = TagTable.$;
 
     @Override
-    public Page<Blog> getBlogInfoListByTagNameAndIsPublished(String tagName, Integer pageNum) {
-            return jSqlClient.createQuery(blog)
-                    .where(blog.tags(tagTableEx -> tagTableEx.tagName().eq(tagName)))
+    public Page<BlogDetailView> getBlogInfoListByTagNameAndIsPublished(String tagName, Integer pageNum) {
+        return  jSqlClient.createQuery(blog)
+                .where(blog.tags(tagTableEx -> tagTableEx.tagName().eq(tagName)))
                 .where(blog.Published().eq(true))
-                .orderBy(Predicate.sql("%v",it->it.value(orderBy)))
-                .select(blog.fetch(
-                        BlogFetcher.$
-                                .allScalarFields()
-                                .category(
-                                        CategoryFetcher.$
-                                               .allScalarFields()
-                                )
-                                .tags(TagFetcher.$
-                                      .allScalarFields()
-                )))
-                .fetchPage(pageNum-1,10);
-
+                .orderBy(Predicate.sql("%v", it -> it.value(orderBy)))
+                .select(blog.fetch(BlogDetailView.class))
+                .fetchPage(pageNum - 1, 10);
     }
 
     @Override
     public List<TagView> getTagList() {
+        // 从redis中查询数据
         String tagColorListKey = RedisKeyConstants.TAG_COLOR_List;
         List<TagView> listByValues = redisService.getListByValues(tagColorListKey);
         if (listByValues!= null) {

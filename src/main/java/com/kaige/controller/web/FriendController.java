@@ -27,7 +27,7 @@ public class FriendController {
      * 获取友联列表和友联信息
      * @return
      */
-    @GetMapping("/friend")
+    @GetMapping("/friends")
     public Result friend() {
         List<Friend> friendList = friendService.getFriendList();
 //        TODO 思考实现方式 为什么需要两个参数  ,

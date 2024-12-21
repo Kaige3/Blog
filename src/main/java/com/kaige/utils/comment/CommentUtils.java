@@ -133,6 +133,7 @@ public class CommentUtils {
         comment.setNickname(comment.getNickname().trim());
 //        根据昵称Hash 设置头像
         setCommentRandomAvatar(comment);
+        assert comment.getWebsite() != null;
         if(!isValidUrl(comment.getWebsite())){
             comment.setWebsite("");
         }

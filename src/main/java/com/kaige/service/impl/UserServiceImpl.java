@@ -21,6 +21,8 @@ public class UserServiceImpl implements UserService , UserDetailsService {
     public UserServiceImpl(JSqlClient jSqlClient) {
         this.jSqlClient = jSqlClient;
     }
+    UserTable userTable = UserTable.$;
+
 
 
     /**
@@ -31,7 +33,7 @@ public class UserServiceImpl implements UserService , UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserTable userTable = UserTable.$;
+
         User user = jSqlClient.createQuery(userTable)
                 .where(userTable.username().eq(username))
                 .select(userTable.fetch(
@@ -45,7 +47,6 @@ public class UserServiceImpl implements UserService , UserDetailsService {
     }
    @Override
     public User findByUsernameAndPassword(String username, String password) {
-        UserTable userTable = UserTable.$;
         User user = jSqlClient.createQuery(userTable)
                  .where(userTable.username().eq(username))
                 .select(userTable.fetch(
@@ -59,6 +60,16 @@ public class UserServiceImpl implements UserService , UserDetailsService {
             throw new UsernameNotFoundException("密码错误");
         }
         return user;
+    }
+
+    @Override
+    public User findByUsernameAndpassword(String username) {
+        return  jSqlClient.createQuery(userTable)
+                .where(userTable.username().eq(username))
+                .select(userTable.fetch(
+                        UserFetcher.$.allTableFields()
+                ))
+                .fetchOneOrNull();
     }
 
 

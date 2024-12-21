@@ -4,6 +4,8 @@ import com.kaige.constant.JwtConstant;
 import com.kaige.entity.Moment;
 import com.kaige.entity.Result;
 import com.kaige.entity.User;
+import com.kaige.entity.UserDraft;
+import com.kaige.entity.dto.MomentView;
 import com.kaige.service.MomentService;
 import com.kaige.service.UserService;
 import com.kaige.service.impl.UserServiceImpl;
@@ -34,7 +36,8 @@ public class MomentController {
                 if(subject.startsWith(JwtConstant.ADMIN_PREFIX)){
     //                用户名
                     String username = subject.replace(JwtConstant.ADMIN_PREFIX, "");
-                    User AdminUser = (User) userService.loadUserByUsername(username);
+                    UserDetails AdminUser = userService.loadUserByUsername(username);
+                    System.out.println("登录成功了");
                     if(AdminUser!= null){
                         adminIdentity = true;
                     }
@@ -43,7 +46,7 @@ public class MomentController {
                 e.printStackTrace();
             }
         }
-        Page<Moment> momentPage = momentService.getMomentList(pageNum,adminIdentity);
+        Page<MomentView> momentPage = momentService.getMomentList(pageNum,adminIdentity);
         return Result.ok("获取成功",momentPage);
     }
 

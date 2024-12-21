@@ -77,20 +77,14 @@ public interface BlogRepository extends JRepository<Blog,Long>, Tables {
     }
 
     default List<RandomBlogView> getRandomBlogList() {
-//        return sql().createQuery(blog)
-//                .where(blog.Published().eq(true))
-//                .where(blog.Recommend().eq(true))
-//                .orderBy(Predicate.sql("%v", it -> it.value("rand()")))
-//                .select(blog.fetch(RandomBlogView.class))
-//                .execute();
-        List<RandomBlogView> execute = sql().createQuery(blog)
+
+        return sql().createQuery(blog)
                 .where(blog.Published().eq(true))
                 .where(blog.Recommend().eq(true))
                 .orderBy(Predicate.sql("RAND()"))
                 .select(blog.fetch(RandomBlogView.class))
                 .limit(2)
                 .execute();
-        return execute;
     }
 
     default Page<BlogInfoView> getBlogListByIsPublished(Integer pageNum,Integer pageSize,String orderBy) {

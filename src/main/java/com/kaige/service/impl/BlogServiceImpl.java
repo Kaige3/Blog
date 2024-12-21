@@ -265,11 +265,11 @@ public class BlogServiceImpl implements BlogService {
     //TODO 完善字段显示，createTIme格式化--> 18日 留给前端完成吧
     public Map<String, Object> getArchiveBlogAndCountByIsPublished() {
 //        查缓存
-        String archiveBlogMapKey = RedisKeyConstants.ARCHIVE_BLOG_MAP;
-        Map<String, Object> mapByValueFromRedis = redisService.getMapByValue(archiveBlogMapKey);
-        if(mapByValueFromRedis!=null){
-            return mapByValueFromRedis;
-        }
+//        String archiveBlogMapKey = RedisKeyConstants.ARCHIVE_BLOG_MAP;
+//        Map<String, Object> mapByValueFromRedis = redisService.getMapByValue(archiveBlogMapKey);
+//        if(mapByValueFromRedis!=null){
+//            return mapByValueFromRedis;
+//        }
 //        按照文章是否公布，对年和月进行统计
         List<LocalDateTime> execute = jSqlClient.createQuery(blog)
                 .where(blog.Published().eq(true))
@@ -303,9 +303,9 @@ public class BlogServiceImpl implements BlogService {
             for (BlogArchiveView blogArchiveView : execute1) {
                 if (!"".equals(blogArchiveView.getPassword())){
                     blogArchiveView.setPassword("");
-                    blogArchiveView.setPrivacy(true);
-                }else {
                     blogArchiveView.setPrivacy(false);
+                }else {
+                    blogArchiveView.setPrivacy(true);
                 }
             }
 
@@ -314,7 +314,7 @@ public class BlogServiceImpl implements BlogService {
         HashMap<String, Object> map = new HashMap<>();
         map.put("count",count);
         map.put("bolgMap",archiveMap);
-        redisService.saveMapToValue(archiveBlogMapKey,map);
+//        redisService.saveMapToValue(archiveBlogMapKey,map);
         return map;
     }
 }

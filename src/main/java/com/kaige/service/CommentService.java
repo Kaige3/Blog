@@ -5,12 +5,11 @@ import com.kaige.entity.dto.CommentInput;
 import org.babyfish.jimmer.Page;
 
 import java.math.BigInteger;
-import java.util.List;
 
 public interface CommentService {
     Page<Comment> getPageCommentList(Integer pageNum,Integer page, BigInteger blogId,Integer pageSize);
 
-    Integer getcountByPageAndIsPublished(Integer page, BigInteger blogId, Object o);
+    Integer getcountByPageAndIsPublished(Integer page, BigInteger blogId, Boolean isPublished);
 
     Comment getCommentById(Integer parentCommentId);
 

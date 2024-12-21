@@ -1,0 +1,6 @@
+MomentView{
+    id
+    content
+    likes
+    Published as published
+}

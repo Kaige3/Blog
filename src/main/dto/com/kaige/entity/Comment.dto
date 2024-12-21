@@ -3,7 +3,7 @@ input CommentInput {
     nickname
     email
     content
-    avatar
+    avatar?
     createTime
     website
     ip
@@ -16,4 +16,28 @@ input CommentInput {
     }
     blogId
     qq
+}
+
+CommentView{
+    id
+    nickname
+    content
+    avatar
+    createTime
+    AdminComment as adminComment
+    flat(parent) {
+        id as parentCommentId
+        nickname as parentCommentNickname
+    }
+    childComment as replyComments{
+        id
+        nickname
+        content
+        avatar
+        createTime
+        flat(parent) {
+            id as parentCommentId
+        }
+    }
+    website
 }

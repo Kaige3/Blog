@@ -19,10 +19,10 @@ public interface CommentRepository extends JRepository<Comment,Integer>, Tables 
     CommentTable commentTable = CommentTable.$;
 
 
-    default Integer getcountByPageAndIsPublished(Integer page, BigInteger blogId, Object o) {
+    default Integer getcountByPageAndIsPublished(Integer page, BigInteger blogId, Boolean isPublished) {
 
         return Math.toIntExact(sql().createQuery(commentTable)
-                .whereIf(o != null, commentTable.Published().eq(true))
+                .whereIf(isPublished != null, commentTable.Published().eq(true))
                 .whereIf(page == 0 && !blogId.equals(BigInteger.valueOf(0)), commentTable.blogId().eq(blogId))
                 .where(commentTable.page().eq(page))
                 .select(commentTable)
@@ -50,7 +50,7 @@ public interface CommentRepository extends JRepository<Comment,Integer>, Tables 
                 .whereIf(blogId != null && page == 0, commentTable.blogId().eq(blogId))
                 .where(commentTable.page().eq(page))
                 .where(commentTable.Published().eq(true))
-                .where(commentTable.parentId().isNull())
+                .where(commentTable.parentId().isNull() )
                 .select(commentTable.fetch(
                         CommentFetcher.$
                                 .nickname()
