@@ -50,7 +50,8 @@ public interface CommentRepository extends JRepository<Comment,Integer>, Tables 
                 .whereIf(blogId != null && page == 0, commentTable.blogId().eq(blogId))
                 .where(commentTable.page().eq(page))
                 .where(commentTable.Published().eq(true))
-                .where(commentTable.parentId().isNull() )
+                .where(commentTable.parentId().eq(-1))
+                .orderBy(commentTable.createTime().desc())
                 .select(commentTable.fetch(
                         CommentFetcher.$
                                 .nickname()

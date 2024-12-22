@@ -11,7 +11,7 @@ import java.util.List;
  * Entity for table "tag"
  */
 @Entity
-@Table(name = "Kaige_blog.tag")
+@Table(name = "kaige_blog.tag")
 public interface Tag {
 
     @Id
@@ -19,6 +19,7 @@ public interface Tag {
     )
     BigInteger id();
 
+    @Column(name = "tag_name")
     String tagName();
 
     @ManyToMany(mappedBy = "tags")

@@ -33,7 +33,7 @@ public class CommentServiceImpl implements CommentService {
             List<Comment> list = new ArrayList<>();
             getReplyComments(list, comment.childComment());
             // 排序子评论列表
-            list.sort(Comparator.comparing(Comment::createTime).reversed());
+            list.sort(Comparator.comparing(Comment::createTime));
             System.out.println(list);
             // 创建新的 Comment 对象并更新其子评论列表
             Comment comment1 = Immutables.createComment(comment, newComment -> {

@@ -7,7 +7,6 @@ import com.kaige.entity.User;
 import com.kaige.entity.dto.CommentInput;
 import com.kaige.enums.CommentOpenStateEnum;
 import com.kaige.service.CommentService;
-import com.kaige.service.UserService;
 import com.kaige.service.impl.UserServiceImpl;
 import com.kaige.utils.JwtUtils;
 import com.kaige.utils.StringUtils;
@@ -18,7 +17,6 @@ import org.babyfish.jimmer.Page;
 import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -95,8 +93,8 @@ public class CommentController {
         boolean isVisitorComment = false;
         //        父评论
         Comment parentComment = null;
-        //        对于有指定 父评论的评论，应该已父评论为准，只判断页面 可能会绕过 “评论开启状态检测
-        if(comment.getParentCommentId() != null){
+        //        对于有指定 父评1论的评论，应该已父评论为准，只判断页面 可能会绕过 “评论开启状态检测
+        if(comment.getParentCommentId() != -1){
         //            当前评论为子评论,继承父评论所属页面 和 文章id
             parentComment = commentService.getCommentById(comment.getParentCommentId());
             Integer page = parentComment.page();
@@ -134,7 +132,7 @@ public class CommentController {
 //                    博主评论不受密码保护限制，根据博主信息设置评论属性
                     if(subject.startsWith(JwtConstant.ADMIN_PREFIX)){
                         String userName = subject.replace(JwtConstant.ADMIN_PREFIX, "");
-                        User userDetails = (User) userService.loadUserByUsername(userName);
+                        User userDetails = userService.findByUsernameAndpassword(userName);
                         if (userDetails==null){
                             return Result.create(403,"博主身份已过期，请重新登录");
                         }
@@ -180,7 +178,7 @@ public class CommentController {
                     if (subject.startsWith(JwtConstant.ADMIN_PREFIX)){
                         //对应第一种情况,拿到username
                         String username = subject.replace(JwtConstant.ADMIN_PREFIX, "");
-                        User userDetails = (User) userService.loadUserByUsername(username);
+                        User userDetails = userService.findByUsernameAndpassword(username);
                         if (userDetails == null){
                             return Result.create(403,"博主身份token已失效,请重新登录");
                         }

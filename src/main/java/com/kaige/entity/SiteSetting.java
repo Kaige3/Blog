@@ -23,6 +23,7 @@ public interface SiteSetting {
     String nameEn();
 
     @Null
+    @Column(name = "name_zh")
     String name();
 
     @Null

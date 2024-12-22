@@ -1,7 +1,6 @@
 package com.kaige.repository;
 
 import com.kaige.entity.*;
-import com.kaige.entity.dto.CommentView;
 import com.kaige.entity.dto.MomentView;
 import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.spring.repository.JRepository;

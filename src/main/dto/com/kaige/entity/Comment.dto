@@ -1,5 +1,5 @@
 input CommentInput {
-    id
+    id?
     nickname
     email
     content
@@ -7,37 +7,13 @@ input CommentInput {
     createTime
     website
     ip
-    Published as published
-    AdminComment as adminComment
+    Published? as published
+    AdminComment? as adminComment
     page
-    Notice as notice
-    flat(parent){
-    id as parentCommentId
-    }
+    Notice? as notice
     blogId
-    qq
-}
-
-CommentView{
-    id
-    nickname
-    content
-    avatar
-    createTime
-    AdminComment as adminComment
     flat(parent) {
         id as parentCommentId
-        nickname as parentCommentNickname
     }
-    childComment as replyComments{
-        id
-        nickname
-        content
-        avatar
-        createTime
-        flat(parent) {
-            id as parentCommentId
-        }
-    }
-    website
+    qq
 }

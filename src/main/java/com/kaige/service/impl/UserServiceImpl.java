@@ -14,15 +14,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-//, UserDetailsService
-//
 public class UserServiceImpl implements UserService , UserDetailsService {
+
     private final JSqlClient jSqlClient;
+    UserTable userTable = UserTable.$;
     public UserServiceImpl(JSqlClient jSqlClient) {
         this.jSqlClient = jSqlClient;
     }
-    UserTable userTable = UserTable.$;
-
 
 
     /**
@@ -45,15 +43,16 @@ public class UserServiceImpl implements UserService , UserDetailsService {
         }
         return (UserDetails) user;
     }
+
    @Override
     public User findByUsernameAndPassword(String username, String password) {
-        User user = jSqlClient.createQuery(userTable)
-                 .where(userTable.username().eq(username))
-                .select(userTable.fetch(
-                        UserFetcher.$.allTableFields()
-                ))
-                .fetchOneOrNull();
-        if (user == null) {
+       User user = jSqlClient.createQuery(userTable)
+               .where(userTable.username().eq(username))
+               .select(userTable.fetch(
+                       UserFetcher.$.allTableFields()
+               ))
+               .fetchOneOrNull();
+       if (user == null) {
            throw new UsernameNotFoundException("用户名不存在");
         }
         if (!HashUtils.matchBC(password,user.password())){

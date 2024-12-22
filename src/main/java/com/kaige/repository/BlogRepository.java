@@ -83,7 +83,7 @@ public interface BlogRepository extends JRepository<Blog,Long>, Tables {
                 .where(blog.Recommend().eq(true))
                 .orderBy(Predicate.sql("RAND()"))
                 .select(blog.fetch(RandomBlogView.class))
-                .limit(2)
+                .limit(5)
                 .execute();
     }
 

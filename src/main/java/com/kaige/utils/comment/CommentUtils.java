@@ -36,17 +36,16 @@ public class CommentUtils {
     private AboutService aboutService;
     @Autowired
     private FriendService friendService;
-    private static BlogService blogService;
+
+    @Autowired
+    private  BlogService blogService;
+
 //    private CommentNotifyChannel
     private Boolean commentDefaultOpen;
 
     @Value("true")
     public void setCommentDefaultOpen(Boolean commentDefaultOpen) {
         this.commentDefaultOpen = commentDefaultOpen;
-    }
-
-    public  void setBlogService(BlogService blogService) {
-        CommentUtils.blogService = blogService;
     }
 
 
@@ -93,31 +92,15 @@ public class CommentUtils {
          }
 
     public void setAdminComment(CommentInput comment, HttpServletRequest request, User userDetails) {
-//        第一种
-//        Comment comment2 = Immutables.createComment(comment1, it -> {
-//            it.setIp(IpAddressUtils.getIpAddress(request));
-//        });
 
 //        设置 博主评论的公共属性
         setGeneralAdminComment(comment, userDetails);
         comment.setIp(IpAddressUtils.getIpAddress(request));
-//        return comment2;
 
-//        第二种写法，略
-//        CommetDraft.$.produce(draft -> draft.set);
     }
 
     private void setGeneralAdminComment(CommentInput comment, User userDetails) {
 
-//        Comment comment1 = Immutables.createComment((Comment) comment, it -> {
-//            it.setIsAdminComment(true);
-//            it.setCreateTime(new DateTime().toLocalDateTime());
-//            it.setAvatar(userDetails.avatar());
-//            it.setWebsite("/");
-//            it.setNickname(userDetails.nickname());
-//            it.setEmail(userDetails.email());
-//            it.setIsNotice(false);
-//        });
         comment.setAdminComment(true);
         comment.setCreateTime(new DateTime().toLocalDateTime());
         comment.setAvatar(userDetails.avatar());
@@ -126,7 +109,6 @@ public class CommentUtils {
         comment.setEmail(userDetails.email());
         comment.setNotice(false);
 
-//        return comment1;
     }
 
     public void setVisitorComment(CommentInput comment, HttpServletRequest request) {
@@ -142,11 +124,7 @@ public class CommentUtils {
         comment.setPublished(commentDefaultOpen);
         comment.setEmail(comment.getEmail().trim());
         comment.setIp(IpAddressUtils.getIpAddress(request));
-//                comment.setIsAdminComment(false);
-//                .setPublished(commentDefaultOpen)
-//                .setEmail(comment.getEmail().trim())
-//                .setIp(IpAddressUtils.getIpAddress(request))
-//                .setCreateTime(new DateTime().toLocalDateTime()));
+
     }
 
     //设置 随机头像 对于昵称不是QQ号的评论，根据昵称Hash设置 头像

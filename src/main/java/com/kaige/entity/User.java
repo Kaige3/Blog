@@ -15,7 +15,7 @@ import java.util.List;
  * Entity for table "user"
  */
 @Entity
-@Table(name = "user")
+@Table(name = "kaige_blog.user")
 public interface User{
 
     @Id
@@ -63,12 +63,5 @@ public interface User{
      */
     String role();
 
-//    @Override
-//    default List<? extends GrantedAuthority> getAuthorities() {
-//        // 返回用户的角色权限，Spring Security会根据这些权限控制访问
-//        List<GrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(new SimpleGrantedAuthority(role()));
-//        return authorities;
-//    }
 }
 

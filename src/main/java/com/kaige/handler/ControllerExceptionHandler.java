@@ -44,8 +44,8 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public Result usernameNotFoundExceptionHandler(HttpServletRequest request, UsernameNotFoundException e) {
-        logger.error("Request URL ; {},Exception:",request.getRequestURL(),e);
-        return Result.create(404,"用户名或密码错误");
+        logger.error("Request URL ; {},Exception:",request.getRequestURL(),e.getMessage());
+        return Result.create(404,e.getMessage());
     }
 
 }

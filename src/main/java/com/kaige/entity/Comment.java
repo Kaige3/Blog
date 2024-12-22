@@ -36,6 +36,7 @@ public interface Comment {
     /**
      * 评论内容
      */
+    @Key
     String content();
 
     /**
@@ -59,7 +60,7 @@ public interface Comment {
      * 公开或回收站
      */
     @Column(name = "is_published")
-    Boolean Published();
+    boolean Published();
 
     /**
      * 博主回复
@@ -70,6 +71,7 @@ public interface Comment {
     /**
      * 0普通文章 1关于我的页面 2友链页面
      */
+
     Integer page();
 
     /**
@@ -84,15 +86,13 @@ public interface Comment {
     @Nullable
     BigInteger blogId();
 
-//    @Null
-//    BigInteger parentCommentId();
 
     /**
      * 父评论
      */
     @Nullable
     @ManyToOne()
-    @JoinColumn(name = "parent_comment_id")
+    @JoinColumn(name = "parent_comment_id",foreignKeyType = ForeignKeyType.FAKE)
     Comment parent();
 
     @OneToMany(mappedBy = "parent")

@@ -75,27 +75,13 @@ public class BlogServiceImpl implements BlogService {
     /**
      * 根据分类名称获取 公开 文章列表
      */
-    public Page<Blog> getBlogListByCategoryName(String categoryName, Integer pageNum) {
+    public Page<BlogByCategoryView> getBlogListByCategoryName(String categoryName, Integer pageNum) {
 
         return jSqlClient.createQuery(blog)
                 .where(blog.category().categoryName().eq(categoryName))
                 .orderBy(Predicate.sql("%v",it->it.value(orderBy)))
                 .select(blog.fetch(
-                        BlogFetcher.$
-                              .title()
-                                .description()
-                                .createTime()
-                                .views()
-                                .words()
-                                .readTime()
-                                .Top()
-                                .password()
-                                .Published()
-                                .category(CategoryFetcher.$
-                                       .categoryName())
-                                .tags(TagFetcher.$
-                                       .tagName()
-                                        .color())
+                        BlogByCategoryView.class
                 ))
                 .fetchPage(pageNum-1,10);
     }
@@ -107,13 +93,14 @@ public class BlogServiceImpl implements BlogService {
      */
     @Override
     public Page<BlogInfoView> getBlogListByIsPublished(Integer pageNum) {
-//        从缓存查询
+        //从缓存查询
         String redisKey = RedisKeyConstants.HOME_BLOG_INFO_LIST;
         Page<BlogInfoView> pageResultFromRedis = redisService.getBlogInfoPageResultByPublish(redisKey,pageNum);
         if(pageResultFromRedis!=null){
             setBlogViewsFromRedisToPageResult(pageResultFromRedis);
             return pageResultFromRedis;
         }
+        //从数据库查询
         Page<BlogInfoView> blogPage = blogRepository.getBlogListByIsPublished(pageNum,pageSize,orderBy);
         List<BlogInfoView> blogInfoViewList = blogPage.getRows();
         processBlogInfoViewListPassword(blogInfoViewList);
@@ -126,8 +113,8 @@ public class BlogServiceImpl implements BlogService {
         String blogViewsKey = RedisKeyConstants.BLOG_VIEWS_MAP;
         List<BlogInfoView> blogInfoViewList = pageResultFromRedis.getRows();
         for (int i = 0; i < blogInfoViewList.size(); i++) {
-            // 如果是从 从redis 中获取到 HOME_BLOG_INFO_LIST
-            // 将json格式转换为 BlogInfoView 对象
+            // 从redis 中获取到 HOME_BLOG_INFO_LIST
+            // 将Json格式转换为 BlogInfoView 对象
             BlogInfoView blogInfoView = JacksonUtils.convertValue(blogInfoViewList.get(i), BlogInfoView.class);
             BigInteger id = blogInfoView.getId();
                 int view = (int) redisService.getValueByHashKey(blogViewsKey, id);
@@ -139,12 +126,13 @@ public class BlogServiceImpl implements BlogService {
     private void processBlogInfoViewListPassword(List<BlogInfoView> blogInfoViewList) {
         for (BlogInfoView blogInfoView : blogInfoViewList) {
             String password = blogInfoView.getPassword();
-            if(password!= null &&!password.equals("")){
+            if(password!= null && !password.isEmpty()){
                 blogInfoView.setPassword("");
                 blogInfoView.setPrivacy(true);
+                blogInfoView.setDescription(PRIVATE_BLOG_DESCRIPTION);
             }else {
                 blogInfoView.setPrivacy(false);
-                blogInfoView.setDescription(PRIVATE_BLOG_DESCRIPTION);
+                blogInfoView.setDescription(MarkdownUtils.markdownToHtmlExtensions(blogInfoView.getDescription()));
             }
         }
     }
@@ -265,11 +253,11 @@ public class BlogServiceImpl implements BlogService {
     //TODO 完善字段显示，createTIme格式化--> 18日 留给前端完成吧
     public Map<String, Object> getArchiveBlogAndCountByIsPublished() {
 //        查缓存
-//        String archiveBlogMapKey = RedisKeyConstants.ARCHIVE_BLOG_MAP;
-//        Map<String, Object> mapByValueFromRedis = redisService.getMapByValue(archiveBlogMapKey);
-//        if(mapByValueFromRedis!=null){
-//            return mapByValueFromRedis;
-//        }
+        String archiveBlogMapKey = RedisKeyConstants.ARCHIVE_BLOG_MAP;
+        Map<String, Object> mapByValueFromRedis = redisService.getMapByValue(archiveBlogMapKey);
+        if(mapByValueFromRedis!=null){
+            return mapByValueFromRedis;
+        }
 //        按照文章是否公布，对年和月进行统计
         List<LocalDateTime> execute = jSqlClient.createQuery(blog)
                 .where(blog.Published().eq(true))
@@ -303,9 +291,9 @@ public class BlogServiceImpl implements BlogService {
             for (BlogArchiveView blogArchiveView : execute1) {
                 if (!"".equals(blogArchiveView.getPassword())){
                     blogArchiveView.setPassword("");
-                    blogArchiveView.setPrivacy(false);
-                }else {
                     blogArchiveView.setPrivacy(true);
+                }else {
+                    blogArchiveView.setPrivacy(false);
                 }
             }
 
@@ -314,7 +302,7 @@ public class BlogServiceImpl implements BlogService {
         HashMap<String, Object> map = new HashMap<>();
         map.put("count",count);
         map.put("bolgMap",archiveMap);
-//        redisService.saveMapToValue(archiveBlogMapKey,map);
+        redisService.saveMapToValue(archiveBlogMapKey,map);
         return map;
     }
 }

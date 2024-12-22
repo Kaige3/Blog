@@ -1,9 +1,8 @@
 package com.kaige;
 
-import com.kaige.entity.BlogTable;
-import com.kaige.entity.Comment;
-import com.kaige.entity.CommentTable;
+import com.kaige.entity.*;
 import com.kaige.entity.dto.CommentInput;
+import com.kaige.entity.dto.UserInput;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +44,20 @@ class KaigeBlogApplicationTests {
     @Test
     void test() {
         jSqlClient.deleteById(Comment.class,BigInteger.valueOf(9));
+    }
+
+    @Test
+    void test1() {
+        UserTable user = UserTable.$;
+        UserInput userInput = new UserInput();
+        userInput.setUsername("Kaige");
+        User user1 = jSqlClient.createQuery(user)
+                .where(user.username().eq(userInput.getUsername()))
+                .select(user.fetch(
+                        UserFetcher.$
+                                .allScalarFields()
+                )).fetchOneOrNull();
+        System.out.println(user1);
     }
 
 }

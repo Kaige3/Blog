@@ -11,7 +11,7 @@ import java.math.BigInteger;
  * Entity for table "about"
  */
 @Entity
-@Table(name = "Kaige_blog.about")
+@Table(name = "kaige_blog.about")
 public interface About {
 
     @Id

@@ -50,7 +50,8 @@ public class BlogController {
                           @RequestHeader(value = "Authorization", defaultValue = "") String jwt){
         BlogDetailView blogDetail = blogService.getBlogByIdAndIsPublished(id);
 //        判断是否有密码
-        if(!"".equals(blogDetail.getPassword())){
+        //密碼可能爲空，也可能為null
+        if(!"".equals(blogDetail.getPassword()) && blogDetail.getPassword() !=null){
 //            判断token是否存在
             if(JwtUtils.judgeTokenIsExist(jwt)){
 //                判断token是否正确
@@ -59,7 +60,7 @@ public class BlogController {
                     if(jwt.startsWith(JwtConstant.ADMIN_PREFIX)){
     //                  获取用户名 ： 去除前缀  得到用户名
                         String username = subject.replace(JwtConstant.ADMIN_PREFIX, "");
-                        User admin = (User) userService.loadUserByUsername(username);
+                        User admin = userService.findByUsernameAndpassword(username);
                         if(admin == null){
                             return Result.create(403,"博主身份已过期，请重新登录");
                         }
@@ -76,6 +77,7 @@ public class BlogController {
                     return Result.create(403,"Token已失效，请重新验证密码");
                 }
             }else {
+                System.out.println("============看一下密码"+blogDetail.getPassword());
                 return Result.create(403,"此文章受密码保护，请验证密码");
             }
             blogDetail.setPassword("");

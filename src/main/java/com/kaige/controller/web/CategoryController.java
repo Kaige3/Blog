@@ -1,6 +1,8 @@
 package com.kaige.controller.web;
 
 import com.kaige.entity.*;
+import com.kaige.entity.dto.BlogByCategoryView;
+import com.kaige.entity.dto.BlogInfoView;
 import com.kaige.service.BlogService;
 import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.sql.JSqlClient;
@@ -23,7 +25,7 @@ public class CategoryController {
     @GetMapping("/category")
     public Result getBlogListByCategoryName(@RequestParam String categoryName,
                                             @RequestParam(defaultValue = "1") Integer pageNum){
-        Page<Blog> PageResult = blogService.getBlogListByCategoryName(categoryName,pageNum);
+        Page<BlogByCategoryView> PageResult = blogService.getBlogListByCategoryName(categoryName,pageNum);
         return Result.ok("获取成功",PageResult);
     }
 

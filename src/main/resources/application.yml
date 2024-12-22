@@ -8,9 +8,9 @@ server:
 # 数据库连接信息
 spring:
   datasource:
+    username: kaige
     password: your_password
-    username: root
-    url: jdbc:mysql://114.132.123.49:3306/Kaige_blog?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+    url: jdbc:mysql://114.132.123.49:3306/kaige_blog?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.cj.jdbc.Driver
 #  devtools:
 #    restart:
@@ -25,7 +25,7 @@ spring:
   data:
     redis:
       host: 114.132.123.49
-      password:
+      password: your_password
       port: 6379
       connect-timeout: 100000ms
       database: 1
@@ -35,8 +35,8 @@ jimmer:
   show-sql: true
   pretty-sql: true
   database-validation:
-    catalog: Kaige_blog
-    mode:
+    catalog: kaige_blog
+    mode: warning
 
 token:
   expireTime: 259200000

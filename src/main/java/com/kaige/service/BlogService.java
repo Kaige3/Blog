@@ -1,10 +1,7 @@
 package com.kaige.service;
 
 import com.kaige.entity.Blog;
-import com.kaige.entity.dto.BlogDetailView;
-import com.kaige.entity.dto.BlogInfoView;
-import com.kaige.entity.dto.NewBlogView;
-import com.kaige.entity.dto.RandomBlogView;
+import com.kaige.entity.dto.*;
 import org.babyfish.jimmer.Page;
 
 import java.math.BigInteger;
@@ -14,7 +11,7 @@ import java.util.Map;
 public interface BlogService {
     Map<String, Object> getArchiveBlogAndCountByIsPublished();
 
-    Page<Blog> getBlogListByCategoryName(String categoryName, Integer pageNum);
+    Page<BlogByCategoryView> getBlogListByCategoryName(String categoryName, Integer pageNum);
 
     Page<BlogInfoView> getBlogListByIsPublished(Integer pageNum);
 

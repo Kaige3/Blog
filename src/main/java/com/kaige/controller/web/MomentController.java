@@ -36,7 +36,7 @@ public class MomentController {
                 if(subject.startsWith(JwtConstant.ADMIN_PREFIX)){
     //                用户名
                     String username = subject.replace(JwtConstant.ADMIN_PREFIX, "");
-                    UserDetails AdminUser = userService.loadUserByUsername(username);
+                    User AdminUser = userService.findByUsernameAndpassword(username);
                     System.out.println("登录成功了");
                     if(AdminUser!= null){
                         adminIdentity = true;

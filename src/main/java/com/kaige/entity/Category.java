@@ -9,7 +9,7 @@ import java.util.List;
  * Entity for table "category"
  */
 @Entity
-@Table(name = "Kaige_blog.category")
+@Table(name = "kaige_blog.category")
 public interface Category {
 
     @Id

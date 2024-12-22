@@ -51,6 +51,27 @@ BlogInfoView{
         color
     }
 }
+
+// 根据分类name分页查询公开博客列表
+BlogByCategoryView{
+    id
+    title
+    description
+    createTime
+    views
+    words
+    readTime
+    Top as top
+    password
+    Published as published
+    category{
+        categoryName as name
+    }
+    tags{
+        tagName as name
+        color
+    }
+}
 BLogViewsView{
     id
     views
