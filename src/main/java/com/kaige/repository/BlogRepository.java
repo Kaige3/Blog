@@ -4,11 +4,9 @@ import com.kaige.entity.*;
 import com.kaige.entity.dto.*;
 import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.spring.repository.JRepository;
-import org.babyfish.jimmer.sql.JSqlClient;
+import org.babyfish.jimmer.spring.repository.support.SpringPageFactory;
 import org.babyfish.jimmer.sql.ast.Predicate;
-import org.babyfish.jimmer.sql.ast.query.ConfigurableRootQuery;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -91,6 +89,7 @@ public interface BlogRepository extends JRepository<Blog,Long>, Tables {
         return sql().createQuery(blog)
                 .where(blog.Published().eq(true))
                 .orderBy(Predicate.sql("%v", it -> it.value(orderBy)))
+                .orderBy(blog.Top().desc())
                 .select(blog.fetch(
                         BlogInfoView.class
                 ))
@@ -101,5 +100,61 @@ public interface BlogRepository extends JRepository<Blog,Long>, Tables {
          return sql().createQuery(blog)
                 .select(blog.fetch(BLogViewsView.class))
                 .execute();
+    }
+
+    default org.springframework.data.domain.Page<BlogDetailView> getBlogList(String title, Integer categoryId, Integer pageNum, Integer pageSize) {
+        org.springframework.data.domain.Page<BlogDetailView> blogDetailViews = sql().createQuery(blog)
+                .whereIf(categoryId != null,()-> blog.categoryId().eq(BigInteger.valueOf(categoryId)))
+                .whereIf(title != null, ()->blog.title().like(title))
+                .orderBy(blog.createTime().desc())
+                .select(blog.fetch(
+                        BlogDetailView.class
+                ))
+                .fetchPage(0, 10, SpringPageFactory.getInstance());
+        return blogDetailViews;
+    }
+
+    default Integer updateTop(BigInteger id, Boolean top) {
+        return sql().createUpdate(blog)
+                .where(blog.id().eq(id))
+                .set(blog.Top(),top)
+                .execute();
+    }
+
+    default Integer updateRecommend(BigInteger id, Boolean recommend) {
+        return sql().createUpdate(blog)
+                .where(blog.id().eq(id))
+                .set(blog.Recommend(), recommend)
+                .execute();
+    }
+
+    default Integer updatePublished(BigInteger id, Boolean published) {
+        return sql().createUpdate(blog)
+                .where(blog.id().eq(id))
+                .set(blog.Published(), published)
+                .execute();
+    }
+
+    default BlogDetailView getBlogById(BigInteger id) {
+       return sql().createQuery(blog)
+                .where(blog.id().eq(id))
+                .select(blog.fetch(
+                        BlogDetailView.class
+                ))
+                .fetchOneOrNull();
+    }
+
+    default int saveBlogTag(BigInteger blogId, BigInteger tagId) {
+         return sql().getAssociations(BlogProps.TAGS)
+                .save(blogId,tagId);
+    }
+
+    default long countBlogByCategoryId(BigInteger id) {
+        return sql().createQuery(blog)
+               .where(blog.categoryId().eq(id))
+                .select(blog.fetch(
+                        BlogDetailView.class
+                ))
+                .fetchUnlimitedCount();
     }
 }

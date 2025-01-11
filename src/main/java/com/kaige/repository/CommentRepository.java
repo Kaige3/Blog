@@ -64,4 +64,10 @@ public interface CommentRepository extends JRepository<Comment,Integer>, Tables 
                                 .recursiveChildComment()
                 )).fetchPage(pageNum - 1, pageSize);
     }
+
+    default Integer deleteCommentByBlogId(BigInteger id) {
+        return sql().createDelete(commentTable)
+               .where(commentTable.blogId().eq(id))
+               .execute();
+    }
 }

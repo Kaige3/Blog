@@ -4,14 +4,17 @@ import com.kaige.constant.RedisKeyConstants;
 import com.kaige.entity.*;
 import com.kaige.entity.vo.FriendInfoVo;
 import com.kaige.handler.exception.PersistenceException;
+import com.kaige.repository.FriendRepository;
 import com.kaige.service.FriendService;
 import com.kaige.service.RedisService;
 import com.kaige.utils.markdown.MarkdownUtils;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Service
@@ -19,6 +22,8 @@ public class FriendServiceImpl implements FriendService {
 
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private FriendRepository friendRepository;
     private final JSqlClient sqlClient;
 
     public FriendServiceImpl(JSqlClient sqlClient) {
@@ -73,6 +78,20 @@ public class FriendServiceImpl implements FriendService {
                 .execute();
 
         if(execute != 1){
+            throw new PersistenceException("操作失败");
+        }
+    }
+
+    @Override
+    public Page<Friend> getFriendListOfPage(Integer pageNum, Integer pageSize) {
+       return friendRepository.getFriendListOfPage(pageNum, pageSize);
+    }
+
+    @Override
+    public void updateFriend(BigInteger id, Boolean isPublic) {
+        try {
+            friendRepository.updateById(id,isPublic);
+        } catch (Exception e) {
             throw new PersistenceException("操作失败");
         }
     }

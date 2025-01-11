@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +92,22 @@ public class RedisServiceImpl implements RedisService {
             throw new RuntimeException("increment不能小于0");
         }
         redisTemplate.opsForHash().increment(blogViewsMap,key,increment);
+    }
+
+    @Override
+    public void deleteCacheByKey(String key) {
+        redisTemplate.delete(key);
+    }
+
+    @Override
+    public void deleteByHashKey(String blogViewsMap, Object id) {
+
+        redisTemplate.opsForHash().delete(blogViewsMap,id);
+    }
+
+    @Override
+    public Object getvalueByHashKey(String blogViewsMap, BigInteger id) {
+        return redisTemplate.opsForHash().get(blogViewsMap,id);
     }
 
 }

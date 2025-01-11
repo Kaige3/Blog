@@ -21,6 +21,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity // 开启WebSecurity
 public class SecurityConfig{
@@ -79,14 +81,14 @@ public class SecurityConfig{
                 // 禁用 csrf防御，因为不使用session
                  csrf(AbstractHttpConfigurer::disable)
                  // 允许跨域
-                 .cors(Customizer.withDefaults())
+                 .cors(withDefaults())
                  // 不通过Session获取SecurityContext
                  .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                  .authorizeHttpRequests(authorize -> authorize
                   // 对于登录接口 允许匿名访问
-                  .requestMatchers("/admin/webTitleSffix").permitAll()
-                 .requestMatchers(HttpMethod.GET,"/admin/**").hasAnyRole("admin","visitor")
-                 .requestMatchers("/admin/**").hasRole("admin")
+//                  .requestMatchers("/admin/webTitleSffix").permitAll()
+//                 .requestMatchers(HttpMethod.GET,"/admin/**").hasAnyRole("admin","visitor")
+//                 .requestMatchers("/admin/**").hasRole("admin")
                   // 除上面外的所有请求, 全部放行
                  .anyRequest().permitAll())
                  .addFilterBefore(new JwtLoginFilter("/admin/login",loginLogService), UsernamePasswordAuthenticationFilter.class)

@@ -63,6 +63,14 @@ public class CommentServiceImpl implements CommentService {
          }
     }
 
+    @Override
+    public void deleteCommentByBlogId(BigInteger id) {
+        Integer count = commentRepository.deleteCommentByBlogId(id);
+        if(count == 0){
+            throw new PersistenceException("删除失败");
+        }
+    }
+
     //    获取子评论列表 放在 list中
     private void getReplyComments(List<Comment> list, List<Comment> comments) {
         for(Comment c:comments){

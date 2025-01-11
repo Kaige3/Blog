@@ -2,6 +2,35 @@ input BlogPassword{
     id
     password
 }
+input BlogInput{
+    id
+    title
+    firstPicture
+    content
+    cate:Any?
+    description
+    Published as published
+    Recommend as recommend
+    Appreciation as appreciation
+    CommentEnabled as commentEnabled
+    Top as top
+    createTime
+    updateTime
+    views
+    words?
+    readTime
+    password
+    category{
+        id
+        categoryName as name
+    }
+    tags{
+        id
+        tagName as name
+        color
+    }
+    userId
+}
 // 文章归档
 BlogArchiveView{
     id
@@ -23,6 +52,7 @@ BlogDetailView{
     words
     readTime
     password
+    CommentEnabled as commentEnabled
     category{
         categoryName as name
     }

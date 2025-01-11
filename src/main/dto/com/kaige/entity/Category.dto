@@ -2,3 +2,13 @@ CategoryView{
     id
     categoryName as name
 }
+
+CategoryByIdView{
+    id
+    categoryName as name
+}
+
+input CategoryInput{
+    id
+    categoryName
+}

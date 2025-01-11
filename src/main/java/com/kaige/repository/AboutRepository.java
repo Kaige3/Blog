@@ -6,6 +6,9 @@ import com.kaige.entity.AboutTable;
 import com.kaige.entity.Tables;
 import org.babyfish.jimmer.spring.repository.JRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Repository
 public interface AboutRepository extends JRepository<About,Long>, Tables {
@@ -20,5 +23,23 @@ public interface AboutRepository extends JRepository<About,Long>, Tables {
                 )).fetchOneOrNull();
         assert about1 != null;
         return about1.value().equals("true");
+    }
+
+    default List<About> getAboutInfo() {
+        return sql().createQuery(about)
+                .select(about.fetch(
+                        AboutFetcher.$
+                                .allScalarFields()
+                )).execute();
+
+    }
+
+
+    default int updateONEAbout(String key, String value) {
+        return sql().createUpdate(about)
+                .where(about.nameEn().eq(key))
+                .set(about.value(),value)
+                .execute();
+
     }
 }

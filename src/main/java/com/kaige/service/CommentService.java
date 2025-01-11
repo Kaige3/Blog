@@ -14,4 +14,6 @@ public interface CommentService {
     Comment getCommentById(Integer parentCommentId);
 
     void saveComment(CommentInput comment);
+
+    void deleteCommentByBlogId(BigInteger id);
 }

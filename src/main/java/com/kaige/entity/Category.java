@@ -12,14 +12,15 @@ import java.util.List;
 @Table(name = "kaige_blog.category")
 public interface Category {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY
     )
+    @Id
     BigInteger id();
 
     /**
      * 分类名称
      */
+    @Key
     String categoryName();
 
     @OneToMany(mappedBy = "category")

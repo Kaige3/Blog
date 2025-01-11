@@ -7,6 +7,7 @@ import com.kaige.utils.markdown.MarkdownUtils;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @Description: 关于我的页面
  */
 @RestController
+@RequestMapping("/apis")
 public class AboutController {
 
      JSqlClient sqlClient;

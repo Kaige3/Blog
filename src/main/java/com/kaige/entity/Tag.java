@@ -20,6 +20,7 @@ public interface Tag {
     BigInteger id();
 
     @Column(name = "tag_name")
+    @Key
     String tagName();
 
     @ManyToMany(mappedBy = "tags")

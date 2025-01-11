@@ -5,6 +5,8 @@ import com.kaige.entity.*;
 import com.kaige.entity.dto.BlogDetailView;
 import com.kaige.entity.dto.BlogInfoView;
 import com.kaige.entity.dto.TagView;
+import com.kaige.handler.exception.NotFoundException;
+import com.kaige.repository.TagRepository;
 import com.kaige.service.RedisService;
 import com.kaige.service.TagService;
 import org.babyfish.jimmer.Page;
@@ -13,6 +15,7 @@ import org.babyfish.jimmer.sql.ast.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Service
@@ -20,6 +23,8 @@ public class TagServiceImpl implements TagService {
 
     @Autowired
     private RedisService redisService;
+    @Autowired
+    TagRepository tagRepository;
 
     private static final String orderBy = "is_top desc, create_time desc";
     private JSqlClient jSqlClient;
@@ -55,6 +60,33 @@ public class TagServiceImpl implements TagService {
                 .execute();
         redisService.saveListToValue(tagColorListKey,execute);
         return execute;
+    }
+
+    @Override
+    public Tag getTagById(BigInteger t) {
+        Tag tag = tagRepository.getById(t);
+        if (tag == null) {
+            throw new NotFoundException("标签不存在");
+        }
+        return tag;
+    }
+
+    @Override
+    public Tag getTagByName(String t) {
+        Tag tagByName = tagRepository.getTagByName(t);
+        if (tagByName == null) {
+            throw new NotFoundException("标签不存在");
+        }
+        return tagByName;
+    }
+
+    @Override
+    public void saveTag(Tag produce) {
+        try {
+            tagRepository.save(produce);
+        } catch (Exception e) {
+            throw new RuntimeException("保存便签失败");
+        }
     }
 
 

@@ -4,10 +4,13 @@ import com.kaige.entity.*;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.Expression;
 import org.babyfish.jimmer.sql.ast.Predicate;
+import org.babyfish.jimmer.sql.ast.mutation.DeleteMode;
+import org.babyfish.jimmer.sql.ast.mutation.DeleteResult;
 import org.babyfish.jimmer.sql.ast.tuple.Tuple2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -21,6 +24,7 @@ class CommentRepositoryTest {
 
     @Autowired
     private CommentRepository commentRepository;
+
 
     CommentTable commentTable = CommentTable.$;
 
@@ -57,6 +61,17 @@ class CommentRepositoryTest {
                                 .parent(CommentFetcher.$.nickname())
                                 .recursiveChildComment()
                 )).execute();
+        System.out.println(execute);
+    }
+
+    @Test
+    void deleteCommentByBlogId() {
+        Integer execute = commentRepository.sql()
+                .createDelete(commentTable)
+                .where(commentTable.blogId().eq(BigInteger.valueOf(1)))
+                .execute();
+
+
         System.out.println(execute);
     }
 

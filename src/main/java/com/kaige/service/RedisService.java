@@ -36,4 +36,10 @@ public interface RedisService {
     void saveMapToHash(String viewsKey, Map map);
 
     void incrementByHashKey(String blogViewsMap, Object key, int increment);
+
+    void deleteCacheByKey(String key);
+
+    void deleteByHashKey(String blogViewsMap, Object id);
+
+    Object getvalueByHashKey(String blogViewsMap, BigInteger id);
 }

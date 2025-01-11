@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
+@RequestMapping("/apis")
 public class CommentController {
 
     @Autowired

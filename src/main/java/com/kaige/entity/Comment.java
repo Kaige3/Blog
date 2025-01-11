@@ -92,6 +92,7 @@ public interface Comment {
      */
     @Nullable
     @ManyToOne()
+    @OnDissociate(DissociateAction.SET_NULL  )
     @JoinColumn(name = "parent_comment_id",foreignKeyType = ForeignKeyType.FAKE)
     Comment parent();
 

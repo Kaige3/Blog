@@ -4,6 +4,7 @@ import com.kaige.constant.RedisKeyConstants;
 import com.kaige.entity.*;
 import com.kaige.entity.dto.*;
 import com.kaige.handler.exception.NotFoundException;
+import com.kaige.handler.exception.PersistenceException;
 import com.kaige.repository.BlogRepository;
 import com.kaige.service.BlogService;
 import com.kaige.service.RedisService;
@@ -15,6 +16,7 @@ import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.math.BigInteger;
@@ -245,6 +247,139 @@ public class BlogServiceImpl implements BlogService {
     public void updateViewsToRedis(BigInteger id) {
         redisService.incrementByHashKey(RedisKeyConstants.BLOG_VIEWS_MAP,id,1);
     }
+
+
+    @Override
+    public org.springframework.data.domain.Page<BlogDetailView> getBlogList(String title, Integer categoryId, Integer pageNum, Integer pageSize) {
+        return blogRepository.getBlogList(title,categoryId,pageNum,pageSize);
+    }
+
+//    @Override
+//    public void deleteBlogTagByBlogId(BigInteger id) {
+//        BlogTagTable blogTagTable = new BlogTagTable();
+//        jSqlClient.createDelete(blogTagTable)
+//                .where(blogTagTable.blogId().eq(id))
+//                .execute();
+//    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteBlogByBlogId(BigInteger id,List<BigInteger> TagIdList) {
+        int count = jSqlClient.getAssociations(BlogProps.TAGS)
+                .deleteAll(
+                        Arrays.asList(id),
+                        Arrays.asList(TagIdList.toArray())
+                );
+        if(count == 0){
+            throw new PersistenceException("维护博客关联的的便签列表失败");
+        }
+    }
+
+    @Override
+    public List<Blog> getTagIdsByBlogId(BigInteger id) {
+        return jSqlClient.createQuery(blog)
+                .where(blog.id().eq(id))
+                .select(blog.fetch(
+                        BlogFetcher.$
+                                .tags(
+                                )
+                ))
+                .execute();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteBlog(BigInteger id) {
+        Integer execute = jSqlClient.createDelete(blog)
+                .where(blog.id().eq(id))
+                .execute();
+        if (execute != 1){
+            throw new PersistenceException("删除博客失败");
+        }
+        deleteBlogRedisCache();
+        redisService.deleteByHashKey(RedisKeyConstants.BLOG_VIEWS_MAP,id);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateTop(BigInteger id, Boolean top) {
+        Integer count = blogRepository.updateTop(id, top);
+        if (count!=1){
+            throw new PersistenceException("更新置顶状态失败");
+        }
+        redisService.deleteCacheByKey(RedisKeyConstants.HOME_BLOG_INFO_LIST);
+    }
+
+    @Override
+    public void updateRecommend(BigInteger id, Boolean recommend) {
+        Integer count = blogRepository.updateRecommend(id, recommend);
+        if (count!=1){
+            throw new PersistenceException("更新推荐状态失败");
+        }
+    }
+
+    @Override
+    public void updatePublished(BigInteger id, Boolean published) {
+        Integer count = blogRepository.updatePublished(id, published);
+        if (count!=1){
+            throw new PersistenceException("更新发布状态失败");
+        }
+        deleteBlogRedisCache();
+    }
+
+    @Override
+    public BlogDetailView getBlogById(BigInteger id) {
+        BlogDetailView blogById = blogRepository.getBlogById(id);
+        if (blogById == null){
+            throw new NotFoundException("文章不存在");
+        }
+        int views = (int) redisService.getvalueByHashKey(RedisKeyConstants.BLOG_VIEWS_MAP, blogById.getId());
+        blogById.setViews(views);
+        return blogById;
+    }
+
+    @Override
+    public void saveBlog(BlogInput blog) {
+        try {
+            blogRepository.save(blog);
+        } catch (Exception e) {
+            throw new RuntimeException("保存博客失败");
+        }
+        redisService.saveKVToHash(RedisKeyConstants.BLOG_VIEWS_MAP,blog.getId(),0);
+        deleteBlogRedisCache();
+    }
+
+    @Override
+    public void saveBlogTag(BigInteger blogId, BigInteger tagId) {
+        int i = blogRepository.saveBlogTag(blogId, tagId);
+        if (i!=1){
+            throw new PersistenceException("维护博客标签列表失败");
+        }
+    }
+
+    @Override
+    public void updateBlog(BlogInput blog) {
+        try {
+            blogRepository.update(blog);
+        } catch (Exception e) {
+            throw new RuntimeException("更新博客失败");
+        }
+        deleteBlogRedisCache();
+        redisService.saveKVToHash(RedisKeyConstants.BLOG_VIEWS_MAP,blog.getId(),blog.getViews());
+    }
+
+    @Override
+    public long countBlogByCategoryId(BigInteger id) {
+        return blogRepository.countBlogByCategoryId(id);
+    }
+
+    // 删除首页缓存，最新推荐缓存，归档页面缓存，博客浏览量缓存
+    private void deleteBlogRedisCache() {
+        redisService.deleteCacheByKey(RedisKeyConstants.HOME_BLOG_INFO_LIST);
+        redisService.deleteCacheByKey(RedisKeyConstants.NEW_BLOG_LIST);
+        redisService.deleteCacheByKey(RedisKeyConstants.ARCHIVE_BLOG_MAP);
+    }
+
 
     /**
      文章归档  按照年月  统计文章数量

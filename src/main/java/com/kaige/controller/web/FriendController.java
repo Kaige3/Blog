@@ -7,16 +7,14 @@ import com.kaige.service.FriendService;
 import com.kaige.service.RedisService;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/apis")
 public class FriendController {
 
     @Autowired
