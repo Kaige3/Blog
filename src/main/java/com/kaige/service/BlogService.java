@@ -57,4 +57,8 @@ public interface BlogService {
     void updateBlog(BlogInput blog);
 
     long countBlogByCategoryId(BigInteger id);
+
+    List<Blog> getBlogsByTagId(BigInteger id);
+
+    List<BlogIdAndTitleView> getBlogIdAndTitle();
 }

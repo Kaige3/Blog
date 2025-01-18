@@ -4,6 +4,7 @@ import com.kaige.constant.RedisKeyConstants;
 import com.kaige.entity.*;
 import com.kaige.entity.dto.BlogDetailView;
 import com.kaige.entity.dto.BlogInfoView;
+import com.kaige.entity.dto.TagInput;
 import com.kaige.entity.dto.TagView;
 import com.kaige.handler.exception.NotFoundException;
 import com.kaige.repository.TagRepository;
@@ -73,11 +74,8 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag getTagByName(String t) {
-        Tag tagByName = tagRepository.getTagByName(t);
-        if (tagByName == null) {
-            throw new NotFoundException("标签不存在");
-        }
-        return tagByName;
+
+        return tagRepository.getTagByName(t);
     }
 
     @Override
@@ -87,6 +85,25 @@ public class TagServiceImpl implements TagService {
         } catch (Exception e) {
             throw new RuntimeException("保存便签失败");
         }
+    }
+
+    @Override
+    public org.springframework.data.domain.Page<TagView> pageOfTags(Integer pageNum, Integer pageSize) {
+        try {
+            return tagRepository.pageOfTags(pageNum,pageSize);
+        } catch (Exception e) {
+            throw new RuntimeException("分页查询失败");
+        }
+    }
+
+    @Override
+    public void updateTag(TagInput tagInput) {
+        tagRepository.update(tagInput);
+    }
+
+    @Override
+    public void deleteTagById(BigInteger id) {
+        tagRepository.deleteById(id);
     }
 
 

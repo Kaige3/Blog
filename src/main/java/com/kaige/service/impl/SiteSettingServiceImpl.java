@@ -14,10 +14,8 @@ import com.kaige.utils.JacksonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigInteger;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -99,5 +97,56 @@ public class SiteSettingServiceImpl implements SiteSettingService {
         map.put("badges",badges);
         redisService.saveMapToValue(siteInfoMapKey,map);
         return map;
+    }
+
+    @Override
+    public Map<String, List<SiteSetting>> getList() {
+        List<SiteSetting> list = siteSettingRepository.getList();
+        List<SiteSetting> type1 = new ArrayList<>();
+        List<SiteSetting> type2 = new ArrayList<>();
+        List<SiteSetting> type3 = new ArrayList<>();
+        for (SiteSetting siteSetting : list) {
+            switch (siteSetting.type()){
+                case 1->type1.add(siteSetting);
+                case 2->type2.add(siteSetting);
+                case 3->type3.add(siteSetting);
+            }
+        }
+        HashMap<String, List<SiteSetting>> map = new HashMap<>(8);
+        map.put("type1",type1);
+        map.put("type2",type2);
+        map.put("type3",type3);
+        return map;
+    }
+
+    @Override
+    public void updateSiteSetting(List<LinkedHashMap> siteSettings, List<BigInteger> deleteIds) {
+        if (deleteIds!=null){
+            for(BigInteger id:deleteIds){
+                //删除
+                siteSettingRepository.deleteSiteSettingInfoById(id);
+            }
+        }
+
+        for (LinkedHashMap siteSetting : siteSettings) {
+            //保存或者更新
+            SiteSetting siteSetting1 = JacksonUtils.readValue(JacksonUtils.writeValueAsString(siteSetting), SiteSetting.class);
+            if (siteSetting1.id()!=null){
+                siteSettingRepository.update(siteSetting1);
+                continue;
+            }else {
+                siteSettingRepository.save(siteSetting1);
+            }
+        }
+        deleteSiteInfoRedisCache();
+    }
+
+    @Override
+    public String getWebTitleSuffix() {
+        return siteSettingRepository.getWebTitleSuffix();
+    }
+
+    private void deleteSiteInfoRedisCache() {
+        redisService.deleteCacheByKey(RedisKeyConstants.SITE_INFO_MAP);
     }
 }

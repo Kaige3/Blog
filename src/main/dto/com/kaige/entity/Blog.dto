@@ -120,3 +120,7 @@ RandomBlogView{
     password
     privacy: Boolean
 }
+BlogIdAndTitleView{
+    id
+    title
+}

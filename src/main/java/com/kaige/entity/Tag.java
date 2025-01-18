@@ -30,6 +30,7 @@ public interface Tag {
      * 标签颜色（可选）
      */
     @Null
+    @Key
     String color();
 }
 

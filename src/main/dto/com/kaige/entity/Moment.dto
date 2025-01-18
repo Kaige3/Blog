@@ -4,3 +4,11 @@ MomentView{
     likes
     Published as published
 }
+
+input MomentInput{
+    id
+    content
+    createTime?
+    likes
+    Published as published
+}

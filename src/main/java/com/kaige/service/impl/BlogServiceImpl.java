@@ -373,6 +373,17 @@ public class BlogServiceImpl implements BlogService {
         return blogRepository.countBlogByCategoryId(id);
     }
 
+    @Override
+    public List<Blog> getBlogsByTagId(BigInteger id) {
+        return blogRepository.getBlogsByTagId(id);
+    }
+
+    @Override
+    public List<BlogIdAndTitleView> getBlogIdAndTitle() {
+
+        return blogRepository.getBlogIdAndTitle();
+    }
+
     // 删除首页缓存，最新推荐缓存，归档页面缓存，博客浏览量缓存
     private void deleteBlogRedisCache() {
         redisService.deleteCacheByKey(RedisKeyConstants.HOME_BLOG_INFO_LIST);

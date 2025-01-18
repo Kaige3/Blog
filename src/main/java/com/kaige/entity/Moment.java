@@ -23,6 +23,7 @@ public interface Moment {
     /**
      * 动态内容
      */
+    @Key
     String content();
 
     /**

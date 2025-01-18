@@ -1,0 +1,10 @@
+input FriendInput{
+    id?
+    nickname
+    description
+    website
+    avatar
+    Published as published
+    views?
+    createTime?
+}

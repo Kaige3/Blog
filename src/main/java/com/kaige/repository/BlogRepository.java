@@ -157,4 +157,18 @@ public interface BlogRepository extends JRepository<Blog,Long>, Tables {
                 ))
                 .fetchUnlimitedCount();
     }
+
+    default List<Blog> getBlogsByTagId(BigInteger id) {
+        return sql().createQuery(blog)
+                .where(blog.tags(tagTable -> tagTable.id().eq(id)))
+                .select(blog)
+                .execute();
+    }
+
+    default List<BlogIdAndTitleView> getBlogIdAndTitle() {
+        return sql().createQuery(blog)
+                .select(blog.fetch(
+                        BlogIdAndTitleView.class
+                )).execute();
+    }
 }

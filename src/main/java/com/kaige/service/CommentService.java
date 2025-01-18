@@ -16,4 +16,14 @@ public interface CommentService {
     void saveComment(CommentInput comment);
 
     void deleteCommentByBlogId(BigInteger id);
+
+    org.springframework.data.domain.Page<Comment> getCommentListOfPage(Integer page, BigInteger pageId, Integer pageNum, Integer pageSize);
+
+    void updateCommentPublished(Integer id, Boolean published);
+
+    void updateCommentNotice(Integer id, Boolean notice);
+
+    void deleteCommentById(Integer id);
+
+    void updateComment(CommentInput commentInput);
 }

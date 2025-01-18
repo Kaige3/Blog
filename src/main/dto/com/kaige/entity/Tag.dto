@@ -3,3 +3,9 @@ TagView{
     tagName as name
     color
 }
+
+input TagInput{
+    id
+    tagName as name
+    color
+}

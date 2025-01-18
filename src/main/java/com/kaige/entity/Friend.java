@@ -23,6 +23,7 @@ public interface Friend {
     /**
      * 昵称
      */
+    @Key
     String nickname();
 
     /**
@@ -33,6 +34,7 @@ public interface Friend {
     /**
      * 站点
      */
+    @Key
     String website();
 
     /**

@@ -2,6 +2,7 @@ package com.kaige.service.impl;
 
 import com.kaige.constant.RedisKeyConstants;
 import com.kaige.entity.*;
+import com.kaige.entity.dto.FriendInput;
 import com.kaige.entity.vo.FriendInfoVo;
 import com.kaige.handler.exception.PersistenceException;
 import com.kaige.repository.FriendRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -94,6 +96,61 @@ public class FriendServiceImpl implements FriendService {
         } catch (Exception e) {
             throw new PersistenceException("操作失败");
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveFriend(FriendInput friendInput) {
+        friendInput.setViews(0);
+        friendInput.setCreateTime(LocalDateTime.now());
+        try {
+            friendRepository.save(friendInput);
+        } catch (Exception e) {
+            throw new PersistenceException("保存友联失败");
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateFriendInfo(FriendInput friendInput) {
+        try {
+            friendRepository.update(friendInput);
+        } catch (Exception e) {
+            throw new PersistenceException("更新友联失败");
+        }
+    }
+
+    @Override
+    public void deleteFriend(BigInteger id) {
+        try {
+            friendRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new PersistenceException("删除友联失败");
+        }
+    }
+
+    @Override
+    public void updateCommentEnabled(Boolean commentEnabled) {
+        try {
+            friendRepository.updateCommentEnabled(commentEnabled);
+        } catch (Exception e) {
+            throw new PersistenceException("更新友联失败");
+        }
+        deleteFriendRedisCache();
+    }
+
+    @Override
+    public void updateFriendInfoContent(String content) {
+        try {
+            friendRepository.updateFriendInfoContent(content);
+        } catch (Exception e) {
+            throw new PersistenceException("更新友联失败");
+        }
+        deleteFriendRedisCache();
+    }
+
+    private void deleteFriendRedisCache() {
+        redisService.deleteCacheByKey(RedisKeyConstants.FRIEND_INFO_MAP);
     }
 
 }

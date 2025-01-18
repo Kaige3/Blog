@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -69,6 +70,94 @@ public class CommentServiceImpl implements CommentService {
         if(count == 0){
             throw new PersistenceException("删除失败");
         }
+    }
+
+    @Override
+    public org.springframework.data.domain.Page<Comment> getCommentListOfPage(Integer page, BigInteger pageId, Integer pageNum, Integer pageSize) {
+        return commentRepository.getCommentListOfPage(page,pageId,pageNum,pageSize);
+    }
+
+    @Override
+    public void updateCommentPublished(Integer id, Boolean published) {
+        // 如果是隐藏评论 则将其所有子评论也隐藏
+        //1.查询改父评论下的所有子评论
+        if(!published){
+            List<Comment> commentList = commentRepository.getCommentListByParentId(id);
+            for(Comment comment:commentList){
+        //2.递归修改评论公开状态
+                  hideComment(comment);
+            }
+        }
+        commentRepository.updateCommentPublished(id,published);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateCommentNotice(Integer id, Boolean notice) {
+        try {
+            commentRepository.updateCommentNotice(id,notice);
+        } catch (Exception e) {
+            throw new PersistenceException("更新失败");
+        }
+    }
+
+    /**
+     * 删除id下的所有评论
+     * @param id
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteCommentById(Integer id) {
+        //1.查询改父评论下的所有子评论
+        List<Comment> commentList = commentRepository.getCommentListByParentId(id);
+        //2.递归删除评论
+        for(Comment comment:commentList){
+            deleteComment(comment);
+        }
+        try {
+            commentRepository.deleteCommentById(id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void updateComment(CommentInput commentInput) {
+        try {
+            commentRepository.update(commentInput);
+        } catch (Exception e) {
+            throw new PersistenceException("修改评论失败");
+        }
+    }
+
+    /**
+     * 递归删除评论
+     * @param comment
+     */
+    private void deleteComment(Comment comment) {
+        for(Comment c:comment.childComment()){
+            if(c.childComment()!= null){
+                deleteComment(c);
+            }
+        }
+        try {
+            commentRepository.deleteCommentById(comment.id());
+        } catch (Exception e) {
+            throw new PersistenceException("删除失败");
+        }
+    }
+
+    /**
+     * 递归隐藏子评论
+     * @param comment
+     */
+    private void hideComment(Comment comment) {
+        for(Comment c:comment.childComment()){
+            if(c.childComment()!= null){
+                hideComment(c);
+            }
+        }
+        commentRepository.updateCommentPublished(comment.id(),false);
     }
 
     //    获取子评论列表 放在 list中
